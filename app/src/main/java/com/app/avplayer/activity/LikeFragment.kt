@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.app.avplayer.R
+import com.app.avplayer.adapter.AVPlayerAdapter
 import com.app.avplayer.databinding.ActivityMainBinding
 import com.app.avplayer.databinding.ListItemBinding
 import com.app.avplayer.model.audio.Audio
@@ -22,7 +23,7 @@ class LikeFragment : Fragment() {
 
 
     var listItem= ArrayList<Audio>()
-    lateinit var adapter: AudioAdapter
+    lateinit var adapter: AVPlayerAdapter
     lateinit var binding: ActivityMainBinding
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -36,7 +37,7 @@ class LikeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         binding.audioRecyclerView.layoutManager= LinearLayoutManager(requireContext())
         binding.audioRecyclerView.setHasFixedSize(false)
-        adapter = AudioAdapter(requireActivity(), listItem)
+        adapter = AVPlayerAdapter(requireActivity(), listItem,Constants.AUDIO_TYPE)
         binding.audioRecyclerView.adapter=adapter
         (requireActivity() as BaseActivity).avpViewModel.audioListLiked.observe(viewLifecycleOwner){
             it?.let {
@@ -47,7 +48,7 @@ class LikeFragment : Fragment() {
         }
     }
 
-    class AudioAdapter(private var context: Context,
+   /* class AudioAdapter(private var context: Context,
                        private var itemList: ArrayList<Audio>
     ):
         RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -82,6 +83,6 @@ class LikeFragment : Fragment() {
             return itemList.size
         }
 
-    }
+    }*/
 
 }

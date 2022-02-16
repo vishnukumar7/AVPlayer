@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.app.avplayer.R
+import com.app.avplayer.adapter.AVPlayerAdapter
 import com.app.avplayer.databinding.ActivityMainBinding
 import com.app.avplayer.databinding.ListItemBinding
 import com.app.avplayer.model.audio.Audio
@@ -21,7 +22,7 @@ import com.bumptech.glide.Glide
 class SongFragment : Fragment() {
 
 
-    lateinit var adapter: AudioAdapter
+    lateinit var adapter: AVPlayerAdapter
     lateinit var binding: ActivityMainBinding
     var audioListItem=ArrayList<Audio>()
 
@@ -41,7 +42,7 @@ class SongFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         binding.audioRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.audioRecyclerView.setHasFixedSize(false)
-        adapter = AudioAdapter(requireActivity(), audioListItem)
+        adapter = AVPlayerAdapter(requireActivity(), audioListItem,Constants.AUDIO_TYPE)
         binding.audioRecyclerView.adapter = adapter
 
 
@@ -51,7 +52,7 @@ class SongFragment : Fragment() {
     }
 
 
-    class AudioAdapter(
+  /*  class AudioAdapter(
         private var context: Context,
         private var itemList: ArrayList<Audio>
     ) :
@@ -89,5 +90,5 @@ class SongFragment : Fragment() {
             return itemList.size
         }
 
-    }
+    }*/
 }

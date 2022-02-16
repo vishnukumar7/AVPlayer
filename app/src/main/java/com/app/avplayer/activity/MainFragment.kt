@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.app.avplayer.R
+import com.app.avplayer.adapter.AVPlayerAdapter
 import com.app.avplayer.databinding.ActivityMainBinding
 import com.app.avplayer.databinding.GridItemBinding
 import com.app.avplayer.databinding.ListItemBinding
@@ -28,7 +29,7 @@ class MainFragment : Fragment() {
 
     var screenWidth: Int=0
     var albumListItem = ArrayList<Album>()
-    lateinit var adapter: AudioAdapter
+    lateinit var adapter: AVPlayerAdapter
     lateinit var binding: ActivityMainBinding
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -45,7 +46,7 @@ class MainFragment : Fragment() {
         val width = metrics.widthPixels
         val r = resources
         screenWidth = (width* .45).roundToInt()
-        adapter = AudioAdapter(requireActivity(),albumListItem,screenWidth)
+        adapter = AVPlayerAdapter(requireActivity(),albumListItem,Constants.ALBUM_TYPE,screenWidth)
          getList()
         binding.audioRecyclerView.adapter = adapter
 
@@ -68,68 +69,5 @@ class MainFragment : Fragment() {
             binding.audioRecyclerView.adapter = adapter
             adapter.notifyDataSetChanged()
         }
-    }
-
-
-
-    class AudioAdapter(private var context: Context,
-                       private var allAlbum: ArrayList<Album>, private var screenWidth:Int
-    ):
-        RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-
-        class AudioListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-            val itemBinding = ListItemBinding.bind(itemView.rootView)
-        }
-
-        class AudioGridtViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-            val itemBinding = GridItemBinding.bind(itemView.rootView)
-        }
-
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-            return if(AppUtils.VIEW_LAYOUT_LIST){
-                AudioListViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.list_item, parent, false))
-            } else AudioGridtViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.grid_item, parent, false))
-        }
-
-        override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-           if(holder is AudioListViewHolder){
-               val album = allAlbum[position]
-               holder.itemBinding.itemText.text = album.album
-               Glide.with(context)
-                   .load(AppUtils.getAlbumArtBitmap(context, album.albumId.toLong()))
-                   .placeholder(R.drawable.music)
-                   .error(R.drawable.music).into(
-                       holder.itemBinding.albumArt
-                   )
-               holder.itemBinding.mainLay.setOnClickListener {
-                   val intent = Intent(context, FileActivity::class.java)
-                   intent.putExtra(Constants.TAG_FROM, "Main")
-                   intent.putExtra(Constants.TAG_ALBUM_ID, album.albumId)
-                   intent.putExtra(Constants.TAG_TITLE, album.album)
-                   context.startActivity(intent)
-               }
-           }else if(holder is AudioGridtViewHolder){
-               val album=allAlbum[position]
-               holder.itemBinding.mainLay.layoutParams.width = screenWidth
-               holder.itemBinding.mainLay.layoutParams.height=screenWidth
-               holder.itemBinding.itemText.text =album.album
-               Glide.with(context).load(AppUtils.getAlbumArtBitmap(context, album.albumId.toLong()))
-                   .placeholder(R.drawable.music_1024).error(R.drawable.music_1024).into(
-                   holder.itemBinding.albumArt
-               )
-               holder.itemBinding.mainLay.setOnClickListener {
-                   val intent = Intent(context, FileActivity::class.java)
-                   intent.putExtra(Constants.TAG_FROM, "Main")
-                   intent.putExtra(Constants.TAG_ALBUM_ID, album.albumId)
-                   intent.putExtra(Constants.TAG_TITLE, album.album)
-                   context.startActivity(intent)
-               }
-           }
-        }
-
-        override fun getItemCount(): Int {
-            return allAlbum.size
-        }
-
     }
 }

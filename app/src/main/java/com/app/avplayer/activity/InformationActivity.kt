@@ -7,7 +7,7 @@ import com.app.avplayer.databinding.ActivityInformationBinding
 import com.app.avplayer.model.gallery.Gallery
 import com.app.avplayer.utils.AppUtils
 import com.app.avplayer.utils.Constants
-import com.app.avplayer.utils.Constants.Companion.TAG_IMAGES
+import com.app.avplayer.utils.Constants.TAG_IMAGES
 
 class InformationActivity : BaseActivity() {
 

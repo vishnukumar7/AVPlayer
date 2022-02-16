@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.app.avplayer.R
+import com.app.avplayer.adapter.AVPlayerAdapter
 import com.app.avplayer.databinding.ActivityMainBinding
 import com.app.avplayer.databinding.GridItemBinding
 import com.app.avplayer.databinding.ListItemBinding
@@ -26,7 +27,7 @@ import kotlin.math.roundToInt
 class VideoFragment : Fragment(){
 
     var screenWidth: Int=0
-    lateinit var adapter: VideoAdapter
+    lateinit var adapter: AVPlayerAdapter
     lateinit var binding: ActivityMainBinding
     var videoListItem = ArrayList<Video>()
 
@@ -45,9 +46,10 @@ class VideoFragment : Fragment(){
         val width = metrics.widthPixels
         val r = resources
         screenWidth = (width* .45).roundToInt()
-        adapter = VideoAdapter(
+        adapter = AVPlayerAdapter(
             requireActivity(),
             videoListItem,
+            Constants.VIDEO_TYPE,
             screenWidth
         )
        getList()
@@ -71,51 +73,5 @@ class VideoFragment : Fragment(){
             binding.audioRecyclerView.adapter = adapter
             adapter.notifyDataSetChanged()
         }
-    }
-
-
-    class VideoAdapter(private var context: Context,private var videoList: ArrayList<Video>,private var screenWidth: Int) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-            return if(AppUtils.VIEW_LAYOUT_VIDEO_LIST) VideoListViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.list_item,parent,false)) else
-                VideoGridViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.grid_item,parent,false))
-        }
-
-        override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-            if(holder is VideoListViewHolder) {
-                val video = videoList[position]
-                Glide.with(context).load(File(video.data)).placeholder(R.drawable.video)
-                    .error(R.drawable.video).fitCenter()
-                    .into(holder.listItemBinding.albumArt)
-                holder.listItemBinding.itemText.text = video.title
-                holder.listItemBinding.itemSize.text = Constants.getSize(video.size.toLong())
-                holder.listItemBinding.duration.text =
-                    Constants.clockLength(video.duration.toLong(), true)
-                holder.listItemBinding.mainLay.setOnClickListener {
-                    val intent = Intent(context, VideoPlayActivity::class.java)
-                    intent.putExtra(Constants.TAG_DATA, video)
-                    context.startActivity(intent)
-                }
-            }else if(holder is VideoGridViewHolder) {
-                holder.itemGridBinding.mainLay.layoutParams.width = screenWidth
-                holder.itemGridBinding.mainLay.layoutParams.height = screenWidth
-                val video = videoList[position]
-                Glide.with(context).load(File(video.data)).error(R.drawable.music_logo).fitCenter()
-                    .into(holder.itemGridBinding.albumArt)
-                holder.itemGridBinding.itemText.text = video.title
-            }
-        }
-
-        override fun getItemCount(): Int {
-            return videoList.size
-        }
-
-        class VideoGridViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-            val itemGridBinding= GridItemBinding.bind(itemView)
-        }
-
-        class VideoListViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
-            val listItemBinding= ListItemBinding.bind(itemView)
-        }
-
     }
 }

@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.app.avplayer.R
+import com.app.avplayer.adapter.AVPlayerAdapter
 import com.app.avplayer.databinding.ActivityMainBinding
 import com.app.avplayer.databinding.GalleryGridItemBinding
 import com.app.avplayer.model.gallery.Gallery
@@ -25,7 +26,7 @@ import kotlin.math.roundToInt
 
 class GalleryFragment : Fragment() {
 
-    lateinit var adapter: ImageAdapter
+    lateinit var adapter: AVPlayerAdapter
     lateinit var binding: ActivityMainBinding
     var screenWidth: Int = 0
     var listItem= ArrayList<GalleryData>()
@@ -52,9 +53,10 @@ class GalleryFragment : Fragment() {
         val width = metrics.widthPixels
         val r = resources
         screenWidth = (width * .3).roundToInt()
-        adapter = ImageAdapter(
+        adapter = AVPlayerAdapter(
             requireActivity(),
             listItem,
+            Constants.GALLERY_TYPE,
             screenWidth
         )
         binding.audioRecyclerView.layoutManager = GridLayoutManager(requireContext(), 3)
@@ -66,52 +68,5 @@ class GalleryFragment : Fragment() {
                 adapter.notifyDataSetChanged()
             }
         }
-    }
-
-
-    class ImageAdapter(
-        private var context: Context,
-
-        private var allAlbum: ArrayList<GalleryData>,
-        private var screenWidth: Int
-    ) :
-        RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-
-
-        class GridViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-            val itemBinding = GalleryGridItemBinding.bind(itemView.rootView)
-        }
-
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-            return GridViewHolder(
-                LayoutInflater.from(parent.context)
-                    .inflate(R.layout.gallery_grid_item, parent, false)
-            )
-        }
-
-        override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-            if (holder is GridViewHolder) {
-                holder.itemBinding.mainLay.layoutParams.width = screenWidth
-                holder.itemBinding.mainLay.layoutParams.height = screenWidth
-                holder.itemBinding.itemText.text = allAlbum[position].bucketDisplayName
-                holder.itemBinding.numOfImages.text = allAlbum[position].imageCount.toString()
-                 Glide.with(context)
-                     .load(File(allAlbum[position].lastPath))
-                     .placeholder(R.drawable.image).fitCenter().error(R.drawable.image).into(
-                         holder.itemBinding.albumArt
-                     )
-                holder.itemBinding.mainLay.setOnClickListener {
-                    val intent = Intent(context, FileActivity::class.java)
-                    intent.putExtra(Constants.TAG_FROM, "Images")
-                    intent.putExtra(Constants.TAG_TITLE, allAlbum[position].bucketDisplayName)
-                    context.startActivity(intent)
-                }
-            }
-        }
-
-        override fun getItemCount(): Int {
-            return allAlbum.size
-        }
-
     }
 }
