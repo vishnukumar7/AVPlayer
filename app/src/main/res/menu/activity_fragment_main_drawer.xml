@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+   <!-- <item
+        android:id="@+id/home"
+        android:title="@string/home" />-->
+    <item
+        android:id="@+id/song"
+        android:icon="@drawable/music_nav"
+        android:title="@string/all_song"/>
+  <!--  <item
+        android:id="@+id/liked"
+        android:title="@string/like_song" />-->
+
+    <item
+        android:id="@+id/video"
+        android:icon="@drawable/video_nav"
+        android:title="@string/video" />
+
+    <item
+        android:id="@+id/gallery"
+        android:icon="@drawable/image_nav"
+        android:title="@string/gallery" />
+    <item
+        android:id="@+id/document"
+        android:icon="@drawable/document_nav"
+        android:title="@string/documents" />
+
+    <item
+        android:id="@+id/files"
+        android:icon="@drawable/folder_nav"
+        android:title="@string/files" />
+
+</menu>

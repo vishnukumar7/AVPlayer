@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/play_audio_graident"
+        tools:context=".activity.PlayAudioActivity">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_width="match_parent"
+            android:layout_height="?actionBarSize">
+
+            <ImageView
+                android:layout_width="40dp"
+                android:padding="5dp"
+                android:id="@+id/backBtn"
+                android:src="@drawable/back"
+                android:layout_height="40dp"
+                app:tint="@color/white" />
+
+            <com.app.avplayer.external.CustomTextView
+                android:layout_width="match_parent"
+                android:gravity="center_vertical"
+                android:textSize="18sp"
+                android:padding="5dp"
+                android:textColor="@color/white"
+                app:typeface="@string/font_regular"
+                android:id="@+id/title"
+                android:layout_height="wrap_content"/>
+
+        </androidx.appcompat.widget.Toolbar>
+        <View
+            android:layout_width="match_parent"
+            android:background="@color/exo_white"
+            android:layout_height="0.5dp"/>
+
+
+      <com.app.avplayer.external.CustomExoAudioPlayer
+          android:layout_width="match_parent"
+          android:id="@+id/songExoPlayer"
+          android:layout_gravity="center"
+          android:background="@drawable/round_corner"
+          android:padding="20dp"
+          android:layout_height="wrap_content" />
+
+
+        <RelativeLayout
+            android:orientation="horizontal"
+            android:padding="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <com.app.avplayer.external.CustomTextView
+                android:layout_width="wrap_content"
+                android:textColor="@color/exo_white"
+                android:textSize="18sp"
+                android:text="00:00"
+                android:layout_alignParentStart="true"
+                android:layout_gravity="center_vertical"
+                app:typeface="@string/font_regular"
+                android:id="@+id/runningTime"
+                android:layout_height="wrap_content"/>
+
+            <ProgressBar
+                android:layout_width="0dp"
+                android:layout_toStartOf="@id/totalTime"
+                android:layout_toEndOf="@id/runningTime"
+                android:layout_marginStart="10dp"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="10dp"
+                android:id="@+id/runningProgress"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:progress="50"
+                android:progressTint="@color/Maroon"
+                android:layout_height="wrap_content"/>
+
+            <com.app.avplayer.external.CustomTextView
+                android:layout_width="wrap_content"
+                android:textColor="@color/exo_white"
+                android:textSize="18sp"
+                android:text="00:00"
+                android:layout_alignParentEnd="true"
+                android:layout_gravity="center_vertical"
+                app:typeface="@string/font_regular"
+                android:id="@+id/totalTime"
+                android:layout_height="wrap_content"/>
+
+
+        </RelativeLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:padding="10dp"
+            android:id="@+id/controlPanel"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/backward"
+                android:background="@drawable/exo_icon_previous"
+                android:layout_height="50dp"
+                android:padding="10dp"
+                android:layout_width="50dp"/>
+
+            <TextView
+                android:id="@+id/play"
+                android:layout_marginStart="30dp"
+                android:background="@drawable/exo_icon_pause"
+                android:layout_width="50dp"
+                android:padding="10dp"
+                android:layout_height="50dp"/>
+
+            <TextView
+                android:id="@+id/forward"
+                android:layout_marginStart="30dp"
+                android:background="@drawable/exo_icon_next"
+                android:layout_width="50dp"
+                android:padding="10dp"
+                android:layout_height="50dp"/>
+
+            <ImageView
+                android:id="@+id/liked"
+                android:layout_marginStart="30dp"
+                android:layout_width="50dp"
+                android:src="@drawable/un_like"
+                android:padding="5dp"
+                android:layout_height="50dp"
+                app:tint="@color/white" />
+
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</layout>

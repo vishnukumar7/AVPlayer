@@ -1,0 +1,26 @@
+<resources>
+    <string name="app_name" translatable="false">AudioVideoPlayer</string>
+    <string name="font_bold" translatable="false">font/roboto_bold.ttf</string>
+    <string name="font_condensed" translatable="false">font/roboto_condensed.ttf</string>
+    <string name="font_condenseditalic" translatable="false">font/roboto_condenseditalic.ttf</string>
+    <string name="font_medium" translatable="false">font/roboto_medium.ttf</string>
+    <string name="font_regular" translatable="false">font/roboto_regular.ttf</string>
+    <string name="audio_player">Audio Player</string>
+    <string name="time_zero">00:00</string>
+    <string name="home">Album songs</string>
+    <string name="all_song">Songs</string>
+    <string name="like_song">Likes</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="video">Video</string>
+    <string name="gallery">Gallery</string>
+    <string name="documents">Documents</string>
+    <string name="file_name">File Name :</string>
+    <string name="file_path">File path :</string>
+    <string name="size">Size :</string>
+    <string name="files">Files</string>
+    <string name="date">Date</string>
+    <string name="date_created">Date Created</string>
+    <string name="delete">Delete</string>
+    <string name="info">Info</string>
+</resources>

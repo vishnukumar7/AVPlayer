@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="@color/color_primary"
+        android:fitsSystemWindows="true">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:gravity="center_vertical"
+            android:padding="10dp">
+
+            <com.app.avplayer.external.RoundedImageView
+                android:id="@+id/profile"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_marginStart="20sp"
+                android:src="@drawable/music_logo_1"
+                app:corner_radius="100dp"
+                app:round_background="true" />
+
+            <com.app.avplayer.external.CustomTextView
+                android:id="@+id/userName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20sp"
+                android:layout_toEndOf="@id/profile"
+                android:text="Vishnu Kumar"
+                android:textColor="@color/exo_white"
+                android:textSize="20sp"
+                app:typeface="@string/font_regular" />
+
+            <com.app.avplayer.external.CustomTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/userName"
+                android:layout_marginStart="20sp"
+                android:layout_marginTop="20sp"
+                android:layout_toEndOf="@id/profile"
+                android:text="Android"
+                android:textColor="@color/exo_white"
+                android:textSize="20sp"
+                app:typeface="@string/font_regular" />
+
+        </RelativeLayout>
+
+        <ListView
+            android:id="@+id/nav_menu_listview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/white" />
+    </LinearLayout>
+
+</layout>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        app:cardElevation="5dp"
+        app:cardCornerRadius="10dp"
+        app:contentPadding="2dp"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_height="wrap_content">
+
+            <com.app.avplayer.external.CustomTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="15dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:id="@+id/deleteItem"
+                android:text="@string/delete"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                app:typeface="@string/font_bold" />
+
+            <com.app.avplayer.external.CustomTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="15dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:id="@+id/infoItem"
+                android:text="@string/info"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                app:typeface="@string/font_bold" />
+
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+</layout>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RelativeLayout
+            android:id="@+id/mainLay"
+            android:background="@drawable/round_corner_white"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <com.app.avplayer.external.RoundedImageView
+                android:id="@+id/albumArt"
+                app:round_background="true"
+                app:corner_radius="15dp"
+                android:scaleType="centerCrop"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/image" />
+        </RelativeLayout>
+
+        <com.app.avplayer.external.CustomTextView
+            android:id="@+id/itemText"
+            app:layout_constraintTop_toBottomOf="@id/mainLay"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:gravity="start"
+            android:maxLines="2"
+            android:padding="5dp"
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            app:typeface="@string/font_regular" />
+
+
+        <com.app.avplayer.external.CustomTextView
+            android:id="@+id/numOfImages"
+            app:layout_constraintTop_toBottomOf="@id/itemText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="20dp"
+            android:gravity="start"
+            android:maxLines="1"
+            android:padding="5dp"
+            android:textColor="@color/black"
+            android:textSize="15sp"
+            app:typeface="@string/font_regular" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

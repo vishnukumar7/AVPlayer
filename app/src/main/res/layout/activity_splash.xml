@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        tools:context=".activity.SplashActivity"
+        android:background="@color/red"
+        android:layout_height="match_parent">
+        <ImageView
+            android:layout_width="100dp"
+            android:src="@mipmap/music_logo"
+            android:layout_centerInParent="true"
+            android:layout_height="100dp" />
+        
+        <com.app.percentagechartview.PercentageChartView
+            android:layout_width="250dp"
+            app:pcv_mode="ring"
+            app:pcv_textColor="@color/red"
+            android:id="@+id/progress_circular"
+            app:pcv_startAngle="270"
+            app:pcv_animInterpolator="anticipate_overshoot"
+            app:pcv_progressColor="@color/red"
+            app:pcv_backgroundBarColor="@color/white"
+            android:layout_centerInParent="true"
+            android:layout_height="250dp"/>
+    </RelativeLayout>
+
+</layout>
