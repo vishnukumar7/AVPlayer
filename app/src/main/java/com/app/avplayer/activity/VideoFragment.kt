@@ -5,8 +5,10 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.PopupMenu
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
@@ -24,7 +26,7 @@ import com.bumptech.glide.Glide
 import java.io.File
 import kotlin.math.roundToInt
 
-class VideoFragment : Fragment(){
+class VideoFragment : Fragment(), PopupMenu.OnMenuItemClickListener {
 
     var screenWidth: Int=0
     lateinit var adapter: AVPlayerAdapter
@@ -35,6 +37,13 @@ class VideoFragment : Fragment(){
         binding=DataBindingUtil.inflate(LayoutInflater.from(container!!.context),
             R.layout.activity_main,container,false)
         return binding.root
+    }
+
+    fun showPopup(view: View) {
+        val popupMenu = PopupMenu(context, view)
+        popupMenu.setOnMenuItemClickListener(this)
+        popupMenu.inflate(R.menu.menu_list_1)
+        popupMenu.show()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -62,6 +71,9 @@ class VideoFragment : Fragment(){
             }
         }
 
+
+        binding.optionsMenu.setOnClickListener { showPopup(it) }
+
     }
 
     fun getList(type: Int =0){
@@ -73,5 +85,32 @@ class VideoFragment : Fragment(){
             binding.audioRecyclerView.adapter = adapter
             adapter.notifyDataSetChanged()
         }
+    }
+
+    /**
+     * This method will be invoked when a menu item is clicked if the item
+     * itself did not already handle the event.
+     *
+     * @param item the menu item that was clicked
+     * @return `true` if the event was handled, `false`
+     * otherwise
+     */
+    override fun onMenuItemClick(item: MenuItem?): Boolean {
+        when (item?.itemId) {
+            R.id.list_view -> {
+                AppUtils.VIEW_LAYOUT_VIDEO_LIST = true
+                binding.audioRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+                binding.audioRecyclerView.adapter = adapter
+                adapter.notifyDataSetChanged()
+            }
+
+            R.id.grid_view -> {
+                AppUtils.VIEW_LAYOUT_VIDEO_LIST = false
+                binding.audioRecyclerView.layoutManager = GridLayoutManager(requireContext(), 2)
+                binding.audioRecyclerView.adapter = adapter
+                adapter.notifyDataSetChanged()
+            }
+        }
+        return true
     }
 }

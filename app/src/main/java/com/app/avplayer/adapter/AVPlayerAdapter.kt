@@ -257,6 +257,7 @@ class AVPlayerAdapter(
                 holder.gridItemBinding.mainLay.setOnClickListener {
                     val intent = Intent(context, ImageActivity::class.java)
                     intent.putExtra(Constants.TAG_TITLE, title)
+                    intent.putExtra(Constants.TAG_POSITION,position)
                     context.startActivity(intent)
                 }
             }

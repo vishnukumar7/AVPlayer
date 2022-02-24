@@ -50,5 +50,6 @@ class DocumentFragment : Fragment() {
                 adapter.notifyDataSetChanged()
             }
         }
+        binding.optionsMenu.visibility=View.GONE
     }
 }

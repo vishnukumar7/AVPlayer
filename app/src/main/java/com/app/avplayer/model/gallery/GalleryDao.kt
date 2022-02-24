@@ -18,6 +18,6 @@ interface GalleryDao {
     fun getAll(): Flow<MutableList<Gallery>>
 
     @Query("SELECT * FROM gallery where bucketDisplayName=:name ORDER BY date_added DESC")
-    fun getList(name: String): Flow<MutableList<Gallery>>
+    fun getList(name: String): List<Gallery>
 
 }

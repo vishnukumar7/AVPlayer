@@ -7,8 +7,7 @@ import android.os.Bundle
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.*
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
+import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -25,9 +24,11 @@ import com.app.avplayer.utils.Constants
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.io.File
 import kotlin.math.roundToInt
 
-class FilesFragment : Fragment(), OnFileClickChanged, AdapterView.OnItemSelectedListener {
+class FilesFragment : Fragment(), OnFileClickChanged,
+    PopupMenu.OnMenuItemClickListener {
 val TAG="FilesFragment"
     lateinit var binding: FragmentFilesBinding
     var screenWidth: Int = 0
@@ -37,10 +38,6 @@ var listItem= ArrayList<Files>()
     lateinit var fileAdapter: AVPlayerAdapter
 
     var currentPath: String="/storage/emulated/0"
-
-    var sortBy = arrayOf(
-        "Name","Time","Size"
-    )
 
     var sortText="Name"
     var orderText="ASC"
@@ -52,6 +49,12 @@ var listItem= ArrayList<Files>()
     ): View {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_files, container, false)
         return binding.root
+    }
+    fun showPopup(view: View){
+        val popupMenu=PopupMenu(context,view)
+        popupMenu.setOnMenuItemClickListener(this)
+        popupMenu.inflate(R.menu.menu_list)
+        popupMenu.show()
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -92,37 +95,15 @@ var listItem= ArrayList<Files>()
             Toast.makeText(requireContext(), "delete", Toast.LENGTH_SHORT).show()
             optionsItemDismiss()
         }
-
         itemBinding.infoItem.setOnClickListener {
             Toast.makeText(requireContext(), "info", Toast.LENGTH_SHORT).show()
             optionsItemDismiss()
         }
-
-        var arrayAdapter=ArrayAdapter(requireContext(),android.R.layout.simple_spinner_item,sortBy)
-       arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        with(binding.sortBy)
-        {
-            adapter = arrayAdapter
-            setSelection(0, false)
-            onItemSelectedListener = this@FilesFragment
-            prompt = "Select your filter"
-            gravity = Gravity.CENTER
+        binding.optionsMenu.setOnClickListener {
+            showPopup(it)
         }
-
-        binding.orderBy.setOnClickListener {
-            if(orderText == "ASC") {
-                binding.orderBy.setImageResource(R.drawable.upward)
-                orderText="DESC"
-                
-            }
-            else {
-                binding.orderBy.setImageResource(R.drawable.downward)
-                orderText= "ASC"
-            }
-
-             getList()
-
-
+        binding.backBtn.setOnClickListener {
+            onNextFile(File(currentPath).parent!!)
         }
 
     }
@@ -167,12 +148,47 @@ var listItem= ArrayList<Files>()
         optionsItemShow()
     }
 
-    override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-       sortText=sortBy[position]
-        getList()
-    }
+    override fun onMenuItemClick(item: MenuItem?): Boolean {
+        when(item?.itemId){
+            R.id.list_view -> {
+                AppUtils.VIEW_LAYOUT_LIST=true
+                binding.audioRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+                binding.audioRecyclerView.adapter = fileAdapter
+                fileAdapter.notifyDataSetChanged()
+            }
 
-    override fun onNothingSelected(parent: AdapterView<*>?) {
+            R.id.grid_view -> {
+                AppUtils.VIEW_LAYOUT_LIST=false
+                binding.audioRecyclerView.layoutManager = GridLayoutManager(requireContext(), 2)
+                binding.audioRecyclerView.adapter = fileAdapter
+                fileAdapter.notifyDataSetChanged()
+            }
 
+            R.id.nameSort -> {
+                sortText="Name"
+                getList()
+            }
+
+            R.id.timeSort -> {
+                sortText="Time"
+                getList()
+            }
+
+            R.id.sizeSort ->{
+                sortText="Size"
+                getList()
+            }
+
+            R.id.ascOrder ->{
+                orderText="ASC"
+                getList()
+            }
+
+            R.id.descOrder -> {
+                orderText="DESC"
+                getList()
+            }
+        }
+        return true
     }
 }

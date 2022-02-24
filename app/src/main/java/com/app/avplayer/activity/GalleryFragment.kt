@@ -68,5 +68,6 @@ class GalleryFragment : Fragment() {
                 adapter.notifyDataSetChanged()
             }
         }
+        binding.optionsMenu.visibility=View.GONE
     }
 }

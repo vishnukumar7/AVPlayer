@@ -14,12 +14,16 @@ import com.app.avplayer.model.gallery.Gallery
 
 import com.app.avplayer.utils.Constants
 import com.bumptech.glide.Glide
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.io.File
 
 class ImageActivity : BaseActivity() {
 
     lateinit var binding: ActivityImageBinding
     var listItem= ArrayList<Gallery>()
+    var position=0
     lateinit var adapter: ViewPagerAdapter
     override fun onCreate(savedInstanceState: Bundle?) {
         //  requestWindowFeature(Window.FEATURE_NO_TITLE)
@@ -28,17 +32,22 @@ class ImageActivity : BaseActivity() {
             WindowManager.LayoutParams.FLAG_FULLSCREEN
         )
         super.onCreate(savedInstanceState)
-
+        val TITLE=intent.getStringExtra(Constants.TAG_TITLE)!!
+        position=intent.getIntExtra(Constants.TAG_POSITION,0)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_image)
-        avpViewModel.getListFromTitle(intent.getStringExtra(Constants.TAG_TITLE)!!)
+        avpViewModel.getListFromTitle(TITLE)
        // val list =
           //  galleryDao.getList(intent.getStringExtra(Contants.TAG_TITLE)!!) as ArrayList<Gallery>
         adapter = ViewPagerAdapter(this, listItem)
-        avpViewModel.galleryTitleList.observe(this){
-            it?.let {
-                listItem.clear()
-                listItem.addAll(it)
-                adapter.notifyDataSetChanged()
+
+        CoroutineScope(Dispatchers.Main).launch {
+            avpViewModel.getListFromTitle(TITLE).observe(this@ImageActivity){
+                it?.let {
+                    listItem.clear()
+                    listItem.addAll(it)
+                    adapter.notifyDataSetChanged()
+                    binding.viewPager.currentItem = position
+                }
             }
         }
         binding.viewPager.adapter = adapter
@@ -48,6 +57,7 @@ class ImageActivity : BaseActivity() {
             intent.putExtra(Constants.TAG_DATA, listItem[binding.viewPager.currentItem])
             startActivity(intent)
         }
+        binding.backBtn.setOnClickListener { finish() }
 
     }
 

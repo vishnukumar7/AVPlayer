@@ -20,7 +20,7 @@ interface AudioDao {
     fun getAudioFromId(id: String) : List<Audio>
 
     @Query("SELECT * from audio where album_id=:albumId")
-    fun getAudioFromAlbumId(albumId: String) : Flow<MutableList<Audio>>
+    fun getAudioFromAlbumId(albumId: String) : List<Audio>
 
     @Query("SELECT * FROM audio WHERE `like`='liked'")
     fun getLikedAudio(): Flow<MutableList<Audio>>

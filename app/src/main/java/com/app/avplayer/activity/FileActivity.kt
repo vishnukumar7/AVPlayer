@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.util.DisplayMetrics
 import android.util.Log
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.app.avplayer.R
@@ -12,6 +13,9 @@ import com.app.avplayer.databinding.ActivityFileBinding
 import com.app.avplayer.model.audio.Audio
 import com.app.avplayer.model.gallery.Gallery
 import com.app.avplayer.utils.Constants
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
 class FileActivity : BaseActivity() {
@@ -33,10 +37,10 @@ class FileActivity : BaseActivity() {
             binding.audioRecyclerView.setHasFixedSize(false)
             binding.audioRecyclerView.layoutManager = LinearLayoutManager(this)
             binding.audioRecyclerView.adapter = adapter
-            binding.title.text = intent.getStringExtra(Constants.TAG_TITLE)
-
-
-            avpViewModel.audioAlbumList.observe(this){
+            TITLE = intent.getStringExtra(Constants.TAG_TITLE)!!
+            binding.title.text = TITLE
+            val albumId=intent.getStringExtra(Constants.TAG_ALBUM_ID)!!
+            avpViewModel.getAudioAlbumList(albumId).observe(this){
                 it?.let {
                     audioListItem.clear()
                     audioListItem.addAll(it)
@@ -57,14 +61,17 @@ class FileActivity : BaseActivity() {
             binding.audioRecyclerView.setHasFixedSize(false)
             binding.audioRecyclerView.layoutManager = GridLayoutManager(this, 3)
             binding.audioRecyclerView.adapter = adapter
-            binding.title.text = intent.getStringExtra(Constants.TAG_TITLE)
-            avpViewModel.galleryTitleList.observe(this){
-                it?.let {
-                    listItem.clear()
-                    listItem.addAll(it)
-                    adapter.notifyDataSetChanged()
+            binding.title.text = TITLE
+            CoroutineScope(Dispatchers.Main).launch {
+                avpViewModel.getListFromTitle(TITLE).observe(this@FileActivity){
+                    it?.let {
+                        listItem.clear()
+                        listItem.addAll(it)
+                        adapter.notifyDataSetChanged()
+                    }
                 }
             }
+
 
         }
 

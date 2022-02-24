@@ -100,10 +100,10 @@ val audioListLiked: Flow<MutableList<Audio>> =appDatabase.audioDao().getLikedAud
         appDatabase.galleryDao().update(gallery)
     }
 
-    @Suppress("RedundantSuspendModifier")
-    @WorkerThread
-    suspend fun getListFromTitle(title: String): Flow<MutableList<Gallery>> {
-        return appDatabase.galleryDao().getList(title)
+    fun getListFromTitle(title: String): MutableLiveData<List<Gallery>> {
+        val result=MutableLiveData<List<Gallery>>()
+        result.value=appDatabase.galleryDao().getList(title)
+        return result
     }
 
     fun getFileList(path: String,orderBy: String,sortBy: String): MutableLiveData<ArrayList<Files>> {
@@ -168,10 +168,10 @@ val audioListLiked: Flow<MutableList<Audio>> =appDatabase.audioDao().getLikedAud
         }
     }
 
-    @Suppress("RedundantSuspendModifier")
-    @WorkerThread
-    suspend fun getAudioAlbumList(albumId: String): Flow<MutableList<Audio>> {
-        return appDatabase.audioDao().getAudioFromAlbumId(albumId)
+    fun getAudioAlbumList(albumId: String): MutableLiveData<List<Audio>> {
+        val result=MutableLiveData<List<Audio>>()
+        result.value= appDatabase.audioDao().getAudioFromAlbumId(albumId)
+        return result
     }
 
 

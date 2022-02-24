@@ -8,6 +8,7 @@
         android:orientation="vertical">
 
         <androidx.appcompat.widget.Toolbar
+            android:background="@color/color_primary"
             android:layout_width="match_parent"
             android:layout_height="?actionBarSize">
 
@@ -21,7 +22,8 @@
                     android:layout_height="40dp"
                     android:layout_centerVertical="true"
                     android:padding="5dp"
-                    android:src="@drawable/back" />
+                    android:src="@drawable/back"
+                    app:tint="@color/white" />
 
                 <com.app.avplayer.external.CustomTextView
                     android:id="@+id/title"
@@ -31,7 +33,7 @@
                     android:layout_toEndOf="@id/backBtn"
                     android:gravity="center_vertical"
                     android:padding="5dp"
-                    android:textColor="@color/black"
+                    android:textColor="@color/white"
                     android:textSize="18sp"
                     app:typeface="@string/font_regular" />
             </RelativeLayout>

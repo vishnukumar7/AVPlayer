@@ -76,17 +76,11 @@ class AVPViewModel(private val appRepository: AppRepository) : ViewModel() {
         appRepository.update(album)
     }
 
-    fun getListFromTitle(title: String) = viewModelScope.launch {
-        galleryTitleList = appRepository.getListFromTitle(title).asLiveData()
-    }
+    fun getListFromTitle(title: String) = appRepository.getListFromTitle(title)
 
-    fun getFileList(path: String, orderBy: String, sortBy: String): MutableLiveData<ArrayList<Files>> {
-        return appRepository.getFileList(path, orderBy, sortBy)
-    }
+    fun getFileList(path: String, orderBy: String, sortBy: String)= appRepository.getFileList(path, orderBy, sortBy)
 
-    fun getAudioAlbumList(albumId: String) = viewModelScope.launch {
-        audioAlbumList = appRepository.getAudioAlbumList(albumId).asLiveData()
-    }
+    fun getAudioAlbumList(albumId: String) = appRepository.getAudioAlbumList(albumId)
 
 
     class AVPViewModelFactory(private val appRepository: AppRepository) :
