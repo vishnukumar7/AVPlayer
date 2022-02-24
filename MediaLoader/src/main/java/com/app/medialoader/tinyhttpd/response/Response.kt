@@ -1,34 +1,33 @@
-package com.app.medialoader.tinyhttpd.response;
+package com.app.medialoader.tinyhttpd.response
 
-import com.app.medialoader.tinyhttpd.HttpHeaders;
-import com.app.medialoader.tinyhttpd.HttpVersion;
-
-import java.io.IOException;
+import com.app.medialoader.tinyhttpd.HttpHeaders
+import com.app.medialoader.tinyhttpd.response.HttpStatus
+import com.app.medialoader.tinyhttpd.HttpVersion
+import java.io.IOException
+import kotlin.Throws
 
 /**
  * 响应接口
  *
  * @author vincanyang
  */
-public interface Response {
-
-    HttpStatus status();
-
-    void setStatus(HttpStatus status);
-
-    HttpVersion protocol();
-
-    HttpHeaders headers();
+interface Response {
+    fun status(): HttpStatus
+    fun setStatus(status: HttpStatus)
+    fun protocol(): HttpVersion
+    fun headers(): HttpHeaders
 
     /**
      * 添加头部
      *
-     * @param key   {@link com.app.medialoader.tinyhttpd.HttpHeaders.Names}
+     * @param key   [com.app.medialoader.tinyhttpd.HttpHeaders.Names]
      * @param value
      */
-    void addHeader(String key, String value);
+    fun addHeader(key: String?, value: String?)
 
-    void write(byte[] bytes) throws IOException;
+    @Throws(IOException::class)
+    fun write(bytes: ByteArray)
 
-    void write(byte[] bytes, int offset, int length) throws IOException;
+    @Throws(IOException::class)
+    fun write(bytes: ByteArray, offset: Int, length: Int)
 }

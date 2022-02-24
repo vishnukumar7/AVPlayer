@@ -1,80 +1,61 @@
-package com.app.medialoader.tinyhttpd.response;
+package com.app.medialoader.tinyhttpd.response
 
-
-import com.app.medialoader.tinyhttpd.HttpHeaders;
-import com.app.medialoader.tinyhttpd.HttpVersion;
-import com.app.medialoader.utils.Util;
-
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.channels.SocketChannel;
+import com.app.medialoader.tinyhttpd.HttpHeaders
+import com.app.medialoader.tinyhttpd.HttpVersion
+import com.app.medialoader.utils.Util
+import java.io.IOException
+import java.nio.ByteBuffer
+import java.nio.channels.SocketChannel
 
 /**
  * http响应
  *
  * @author vincanyang
  */
-public final class HttpResponse implements Response {
-
-    private HttpHeaders mHeaders = new HttpHeaders();
-
-    private final HttpVersion mHttpVersion = HttpVersion.HTTP_1_1;
-
-    private HttpStatus mStatus = HttpStatus.OK;
-
-    private final SocketChannel mChannel;
-
-    private ByteBuffer mResponseByteBuffer = ByteBuffer.allocate(Util.DEFAULT_BUFFER_SIZE);
-
-    public HttpResponse(SocketChannel channel) {
-        mChannel = channel;
+class HttpResponse(private val mChannel: SocketChannel) : Response {
+    private val mHeaders = HttpHeaders()
+    private val mHttpVersion = HttpVersion.HTTP_1_1
+    private var mStatus = HttpStatus.OK
+    private val mResponseByteBuffer = ByteBuffer.allocate(Util.DEFAULT_BUFFER_SIZE)
+    override fun setStatus(status: HttpStatus) {
+        mStatus = status
     }
 
-    @Override
-    public void setStatus(HttpStatus status) {
-        mStatus = status;
+    override fun addHeader(key: String?, value: String?) {
+        mHeaders[key!!] = value!!
     }
 
-    @Override
-    public void addHeader(String key, String value) {
-        mHeaders.put(key, value);
+    @Throws(IOException::class)
+    override fun write(bytes: ByteArray) {
+        write(bytes, 0, bytes.size)
     }
 
-    @Override
-    public void write(byte[] bytes) throws IOException {
-        write(bytes, 0, bytes.length);
-    }
-
-    @Override
-    public void write(byte[] bytes, int offset, int length) throws IOException {
-        mResponseByteBuffer.put(bytes, offset, length);
-        mResponseByteBuffer.flip();
-        while (mResponseByteBuffer.hasRemaining()) {//XXX 巨坑：ByteBuffer会缓存，可能不会全部写入channel
-            mChannel.write(mResponseByteBuffer);
+    @Throws(IOException::class)
+    override fun write(bytes: ByteArray, offset: Int, length: Int) {
+        mResponseByteBuffer.put(bytes, offset, length)
+        mResponseByteBuffer.flip()
+        while (mResponseByteBuffer.hasRemaining()) { //XXX 巨坑：ByteBuffer会缓存，可能不会全部写入channel
+            mChannel.write(mResponseByteBuffer)
         }
-        mResponseByteBuffer.clear();
+        mResponseByteBuffer.clear()
     }
 
-    @Override
-    public HttpStatus status() {
-        return mStatus;
+    override fun status(): HttpStatus {
+        return mStatus
     }
 
-    @Override
-    public HttpVersion protocol() {
-        return mHttpVersion;
+    override fun protocol(): HttpVersion {
+        return mHttpVersion
     }
 
-    @Override
-    public HttpHeaders headers() {
-        return mHeaders;
+    override fun headers(): HttpHeaders {
+        return mHeaders
     }
 
-    @Override
-    public String toString() {
+    override fun toString(): String {
         return "HttpResponse{" +
                 "httpVersion=" + mHttpVersion +
                 ", status=" + mStatus +
-                '}';
+                '}'
     }
 }
