@@ -1,15 +1,12 @@
 package com.app.avplayer.activity
 
 import android.app.Dialog
-import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.DisplayMetrics
-import android.view.Gravity
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.util.Log
+import android.view.*
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
@@ -17,23 +14,21 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.app.avplayer.R
 import com.app.avplayer.adapter.AVPlayerAdapter
 import com.app.avplayer.databinding.FragmentFilesBinding
-import com.app.avplayer.databinding.GridItemBinding
-import com.app.avplayer.databinding.ListItemBinding
 import com.app.avplayer.databinding.OptionItemBinding
 import com.app.avplayer.helper.OnFileClickChanged
 import com.app.avplayer.model.files.Files
 import com.app.avplayer.utils.AppUtils
 import com.app.avplayer.utils.Constants
-import com.bumptech.glide.Glide
-import java.io.File
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
 class FilesFragment : Fragment(), OnFileClickChanged, AdapterView.OnItemSelectedListener {
-
+val TAG="FilesFragment"
     lateinit var binding: FragmentFilesBinding
     var screenWidth: Int = 0
     lateinit var dialog: Dialog
@@ -59,6 +54,16 @@ var listItem= ArrayList<Files>()
         return binding.root
     }
 
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.menu_list,menu)
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return true
+    }
+
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -67,9 +72,15 @@ var listItem= ArrayList<Files>()
         val metrics = DisplayMetrics()
         requireActivity().windowManager.defaultDisplay.getMetrics(metrics)
         val width = metrics.widthPixels
-        val r = resources
         screenWidth = (width * .45).roundToInt()
         fileAdapter = AVPlayerAdapter(requireActivity(), listItem,Constants.FILES_TYPE, screenWidth, this)
+        (requireActivity() as MainActivity).avpViewModel.filesList.observe(viewLifecycleOwner){
+            it?.let {
+                listItem.clear()
+                listItem.addAll(it)
+                fileAdapter.notifyDataSetChanged()
+            }
+        }
         getList(currentPath)
         dialog= Dialog(requireContext())
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT));
@@ -102,25 +113,20 @@ var listItem= ArrayList<Files>()
             if(orderText == "ASC") {
                 binding.orderBy.setImageResource(R.drawable.upward)
                 orderText="DESC"
+                
             }
             else {
                 binding.orderBy.setImageResource(R.drawable.downward)
                 orderText= "ASC"
             }
 
-            (requireActivity() as MainActivity).avpViewModel.getAudioList(currentPath,sortText,orderText).observe(viewLifecycleOwner){
-                it?.let {
-                    listItem.clear()
-                    listItem.addAll(it)
-                    fileAdapter.notifyDataSetChanged()
-                }
-            }
+             getList()
 
 
         }
 
-
     }
+
 
     fun optionsItemShow(){
         if(!dialog.isShowing)
@@ -135,14 +141,21 @@ var listItem= ArrayList<Files>()
 
     fun getList(value: String=currentPath) {
         (activity as MainActivity).binding.backBtn.visibility=if(currentPath == "/storage/emulated/0") View.GONE else View.VISIBLE
-        (activity as MainActivity).avpViewModel.getAudioList(value,orderText,sortText)
+       CoroutineScope(Dispatchers.Main).launch {
+           (activity as MainActivity).avpViewModel.getFileList(value,orderText,sortText).observe(viewLifecycleOwner){
+               it?.let {
+                   Log.d(TAG, "getList: ")
+                   listItem.clear()
+                   listItem.addAll(it)
+                   fileAdapter.notifyDataSetChanged()
+               }
+           }
+       }
         if (AppUtils.VIEW_LAYOUT_LIST)
             binding.audioRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         else
             binding.audioRecyclerView.layoutManager = GridLayoutManager(requireContext(), 2)
         binding.audioRecyclerView.adapter = fileAdapter
-
-        fileAdapter.notifyDataSetChanged()
     }
 
     override fun onNextFile(value: String) {
@@ -156,7 +169,7 @@ var listItem= ArrayList<Files>()
 
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
        sortText=sortBy[position]
-        (requireActivity() as MainActivity).avpViewModel.getAudioList(currentPath,sortText,orderText)
+        getList()
     }
 
     override fun onNothingSelected(parent: AdapterView<*>?) {

@@ -21,24 +21,24 @@ interface FilesDao {
     fun getFolderAll(name: String): Flow<MutableList<Files>>
 
     @Query("SELECT * FROM files WHERE folder_name=:name AND is_files=:filesValue AND display_name not like '.%' AND display_name not like '(invalid)' order by display_name ASC")
-    fun getFolderNameASC(name: String, filesValue: String): Flow<MutableList<Files>>
+    fun getFolderNameASC(name: String, filesValue: String): List<Files>
 
     @Query("SELECT * FROM files WHERE folder_name=:name AND is_files=:filesValue AND display_name not like '.%' AND display_name not like '(invalid)' order by display_name DESC")
-    fun getFolderNameDESC(name: String, filesValue: String): Flow<MutableList<Files>>
+    fun getFolderNameDESC(name: String, filesValue: String): List<Files>
 
     @Query("SELECT * FROM files WHERE folder_name=:name AND is_files=:filesValue AND display_name not like '.%' AND display_name not like '(invalid)' order by date_added ASC")
-    fun getFolderDateAddedASC(name: String, filesValue: String): Flow<MutableList<Files>>
+    fun getFolderDateAddedASC(name: String, filesValue: String): List<Files>
 
     @Query("SELECT * FROM files WHERE folder_name=:name AND is_files=:filesValue AND display_name not like '.%' AND display_name not like '(invalid)' order by date_added DESC")
-    fun getFolderDateAddedDESC(name: String, filesValue: String): Flow<MutableList<Files>>
+    fun getFolderDateAddedDESC(name: String, filesValue: String): List<Files>
 
     @Query("SELECT * FROM files WHERE folder_name=:name AND is_files=:filesValue AND display_name not like '.%' AND display_name not like '(invalid)' order by size ASC")
-    fun getFolderSizeASC(name: String, filesValue: String): Flow<MutableList<Files>>
+    fun getFolderSizeASC(name: String, filesValue: String): List<Files>
 
     @Query("SELECT * FROM files WHERE folder_name=:name AND is_files=:filesValue AND display_name not like '.%' AND display_name not like '(invalid)' order by size DESC")
-    fun getFolderSizeDESC(name: String, filesValue: String): Flow<MutableList<Files>>
+    fun getFolderSizeDESC(name: String, filesValue: String): List<Files>
 
     @Query("SELECT * FROM files WHERE folder_name=:name AND is_files=:filesValue AND display_name not like '.%' AND display_name not like '(invalid)' order by display_name ASC")
-    fun getFolder(name: String, filesValue: String): Flow<MutableList<Files>>
+    fun getFolder(name: String, filesValue: String): List<Files>
 
 }

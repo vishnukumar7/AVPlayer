@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item android:id="@+id/view_type" android:title="@string/view_type" app:showAsAction="never">
+
+        <menu>
+            <item android:id="@+id/list_view" android:title="@string/list"/>
+            <item android:id="@+id/grid_view" android:title="@string/grid"/>
+        </menu>
+    </item>
+
+    <item android:id="@+id/orderBy" android:title="@string/order_by" app:showAsAction="never">
+        <menu>
+            <item android:id="@+id/ascOrder" android:title="@string/a_z"/>
+            <item android:id="@+id/descOrder" android:title="@string/z_a"/>
+        </menu>
+    </item>
+
+    <item android:title="@string/sort_by" android:id="@+id/sortBy" app:showAsAction="never">
+        <menu>
+            <item android:id="@+id/nameSort" android:title="@string/name"/>
+            <item android:id="@+id/time" android:title="@string/time"/>
+            <item android:id="@+id/size" android:title="@string/size"/>
+        </menu>
+    </item>
+</menu>

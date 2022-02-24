@@ -1,7 +1,7 @@
 package com.app.medialoader.tinyhttpd.response;
 
-import com.app.medialoader.tinyhttpd.HttpVersion;
 import com.app.medialoader.tinyhttpd.HttpHeaders;
+import com.app.medialoader.tinyhttpd.HttpVersion;
 
 import java.io.IOException;
 

@@ -1,5 +1,6 @@
 package com.app.avplayer.helper
 
+import android.util.Log
 import androidx.lifecycle.*
 import com.app.avplayer.model.album.Album
 import com.app.avplayer.model.audio.Audio
@@ -7,20 +8,24 @@ import com.app.avplayer.model.document.Document
 import com.app.avplayer.model.files.Files
 import com.app.avplayer.model.gallery.Gallery
 import com.app.avplayer.model.video.Video
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class AVPViewModel(private val appRepository: AppRepository) : ViewModel() {
     private val TAG = "AVPViewModel"
 
     val audioList: LiveData<MutableList<Audio>> = appRepository.audioList.asLiveData()
-    var audioAlbumList : LiveData<MutableList<Audio>> =MutableLiveData()
+    var audioAlbumList: LiveData<MutableList<Audio>> = MutableLiveData()
     val audioListLiked: LiveData<MutableList<Audio>> = appRepository.audioList.asLiveData()
     val albumList: LiveData<MutableList<Album>> = appRepository.albumList.asLiveData()
     val documentList: LiveData<MutableList<Document>> = appRepository.documentList.asLiveData()
     var filesList: LiveData<MutableList<Files>> = appRepository.filesList.asLiveData()
+    var filesLists: LiveData<MutableList<Files>> =MutableLiveData()
     val galleryList: LiveData<MutableList<Gallery>> = appRepository.galleryList.asLiveData()
-    var galleryTitleList: LiveData<MutableList<Gallery>> =MutableLiveData()
+    var galleryTitleList: LiveData<MutableList<Gallery>> = MutableLiveData()
     val videoList: LiveData<MutableList<Video>> = appRepository.videoList.asLiveData()
 
     fun insert(audio: Audio) = viewModelScope.launch {
@@ -71,22 +76,18 @@ class AVPViewModel(private val appRepository: AppRepository) : ViewModel() {
         appRepository.update(album)
     }
 
-    fun getListFromTitle(title: String)=viewModelScope.launch {
-         galleryTitleList =appRepository.getListFromTitle(title).asLiveData()
+    fun getListFromTitle(title: String) = viewModelScope.launch {
+        galleryTitleList = appRepository.getListFromTitle(title).asLiveData()
     }
 
-    fun getAudioList(path: String,orderBy: String,sortBy: String): LiveData<MutableList<Files>> {
-        viewModelScope.launch {
-            filesList=appRepository.getAudioList(path,orderBy, sortBy).asLiveData()
-        }
-        return filesList
+    fun getFileList(path: String, orderBy: String, sortBy: String): MutableLiveData<ArrayList<Files>> {
+        return appRepository.getFileList(path, orderBy, sortBy)
     }
 
-    fun getAudioAlbumList(albumId : String) {
-        viewModelScope.launch {
-            audioAlbumList=appRepository.getAudioAlbumList(albumId).asLiveData()
-        }
+    fun getAudioAlbumList(albumId: String) = viewModelScope.launch {
+        audioAlbumList = appRepository.getAudioAlbumList(albumId).asLiveData()
     }
+
 
     class AVPViewModelFactory(private val appRepository: AppRepository) :
         ViewModelProvider.Factory {

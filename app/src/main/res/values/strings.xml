@@ -23,4 +23,13 @@
     <string name="date_created">Date Created</string>
     <string name="delete">Delete</string>
     <string name="info">Info</string>
+    <string name="view_type">View Type</string>
+    <string name="list">List</string>
+    <string name="grid">Grid</string>
+    <string name="sort_by">Sort by</string>
+    <string name="a_z">A-Z</string>
+    <string name="z_a">Z-A</string>
+    <string name="order_by">Order By</string>
+    <string name="name">Name</string>
+    <string name="time">Time</string>
 </resources>

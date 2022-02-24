@@ -1,6 +1,8 @@
 package com.app.avplayer.helper
 
 import androidx.annotation.WorkerThread
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.app.avplayer.model.album.Album
 import com.app.avplayer.model.audio.Audio
 import com.app.avplayer.model.document.Document
@@ -10,6 +12,7 @@ import com.app.avplayer.model.video.Video
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.merge
+import java.io.File
 
 class AppRepository(private var appDatabase: AppDatabase) {
 
@@ -103,57 +106,64 @@ val audioListLiked: Flow<MutableList<Audio>> =appDatabase.audioDao().getLikedAud
         return appDatabase.galleryDao().getList(title)
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @Suppress("RedundantSuspendModifier")
-    @WorkerThread
-    suspend fun getAudioList(path: String,orderBy: String,sortBy: String): Flow<MutableList<Files>> {
+    fun getFileList(path: String,orderBy: String,sortBy: String): MutableLiveData<ArrayList<Files>> {
         when(orderBy) {
             "Name" -> {
                 return if (sortBy == "ASC") {
-                    merge(
-                        appDatabase.filesDao().getFolderNameASC(path, "false"),
-                        appDatabase.filesDao().getFolderNameASC(path, "true")
-                    )
+                    val task=appDatabase.filesDao().getFolderNameASC(path, "false") as ArrayList<Files>
+                    task.addAll(appDatabase.filesDao().getFolderNameASC(path, "true"))
+                    val result=MutableLiveData<ArrayList<Files>>()
+                    result.value=task
+                    result
                 } else {
-                    merge(
-                        appDatabase.filesDao().getFolderNameDESC(path, "false"),
-                        appDatabase.filesDao().getFolderNameDESC(path, "true")
-                    )
+                    val task=appDatabase.filesDao().getFolderNameDESC(path, "false") as ArrayList<Files>
+                    task.addAll(appDatabase.filesDao().getFolderNameDESC(path, "true"))
+                    val result=MutableLiveData<ArrayList<Files>>()
+                    result.value=task
+                    result
+
                 }
             }
 
             "Time" -> {
                 return if (sortBy == "ASC") {
-                    merge(
-                        appDatabase.filesDao().getFolderDateAddedASC(path, "false"),
-                        appDatabase.filesDao().getFolderDateAddedASC(path, "true")
-                    )
+                    val task=appDatabase.filesDao().getFolderDateAddedASC(path, "false") as ArrayList<Files>
+                    task.addAll(appDatabase.filesDao().getFolderDateAddedASC(path, "true"))
+                    val result=MutableLiveData<ArrayList<Files>>()
+                    result.value=task
+                    result
+
                 } else {
-                    merge(
-                        appDatabase.filesDao().getFolderDateAddedDESC(path, "false"),
-                        appDatabase.filesDao().getFolderDateAddedDESC(path, "true")
-                    )
+                    val task=appDatabase.filesDao().getFolderDateAddedDESC(path, "false") as ArrayList<Files>
+                    task.addAll(appDatabase.filesDao().getFolderDateAddedDESC(path, "true"))
+                    val result=MutableLiveData<ArrayList<Files>>()
+                    result.value=task
+                    result
                 }
             }
 
             "Size" -> {
                 return if (sortBy == "ASC") {
-                    merge(
-                        appDatabase.filesDao().getFolderSizeASC(path, "false"),
-                        appDatabase.filesDao().getFolderSizeASC(path, "true")
-                    )
+                    val task=appDatabase.filesDao().getFolderSizeASC(path, "false") as ArrayList<Files>
+                    task.addAll(appDatabase.filesDao().getFolderSizeASC(path, "true"))
+                    val result=MutableLiveData<ArrayList<Files>>()
+                    result.value=task
+                    result
+
                 } else {
-                    merge(
-                        appDatabase.filesDao().getFolderSizeDESC(path, "false"),
-                        appDatabase.filesDao().getFolderSizeDESC(path, "true")
-                    )
+                    val task=appDatabase.filesDao().getFolderSizeDESC(path, "false") as ArrayList<Files>
+                    task.addAll(appDatabase.filesDao().getFolderSizeDESC(path, "true"))
+                    val result=MutableLiveData<ArrayList<Files>>()
+                    result.value=task
+                    result
                 }
             }
             else -> {
-                return merge(
-                    appDatabase.filesDao().getFolder(path, "false"),
-                    appDatabase.filesDao().getFolder(path, "true")
-                )
+                val task=appDatabase.filesDao().getFolder(path, "false") as ArrayList<Files>
+                task.addAll(appDatabase.filesDao().getFolder(path, "true"))
+                val result=MutableLiveData<ArrayList<Files>>()
+                result.value=task
+                return result
             }
         }
     }

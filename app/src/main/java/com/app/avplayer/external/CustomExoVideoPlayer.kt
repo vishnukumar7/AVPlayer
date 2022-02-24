@@ -266,8 +266,7 @@ class CustomExoVideoPlayer : FrameLayout, DownloadListener, View.OnTouchListener
         //   if (homepageResponseResult.get(targetPosition).getPlaytype().equals(Constants.TAG_VIDEO)) {
         val isCached = mMediaLoader!!.isCached(videoURL)
         Log.d(TAG, "playVideo: cached : $isCached")
-        if (!isCached && getContext() != null) DownloadManager.getInstance(getContext())
-            .enqueue(DownloadManager.Request(videoURL), this)
+        if (!isCached && context != null) DownloadManager.getInstance(context)?.enqueue(DownloadManager.Request(videoURL), this)
 
 
         mediaContainer = activity.exoVideoPlayer
@@ -364,14 +363,14 @@ class CustomExoVideoPlayer : FrameLayout, DownloadListener, View.OnTouchListener
         }
     }
 
-    override fun onProgress(url: String, file: File, progress: Int) {
+    override fun onProgress(url: String?, file: File?, progress: Int) {
         Log.d(
             TAG,
-            "onProgress: " + url + " file : " + file.absolutePath + " progress : " + progress
+            "onProgress: " + url + " file : " + file?.absolutePath + " progress : " + progress
         )
     }
 
-    override fun onError(e: Throwable) {
+    override fun onError(e: Throwable?) {
         Log.d(TAG, "onError: $e")
     }
 
