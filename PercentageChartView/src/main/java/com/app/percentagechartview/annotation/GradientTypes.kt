@@ -13,20 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.app.percentagechartview.annotation
 
-package com.app.percentagechartview.annotation;
+import androidx.annotation.IntDef
+import com.app.percentagechartview.renderer.BaseModeRenderer
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-
-import androidx.annotation.IntDef;
-
-import static com.app.percentagechartview.renderer.BaseModeRenderer.GRADIENT_LINEAR;
-import static com.app.percentagechartview.renderer.BaseModeRenderer.GRADIENT_RADIAL;
-import static com.app.percentagechartview.renderer.BaseModeRenderer.GRADIENT_SWEEP;
-import static com.app.percentagechartview.renderer.BaseModeRenderer.INVALID_GRADIENT;
-
-@Retention(RetentionPolicy.SOURCE)
-@IntDef({INVALID_GRADIENT, GRADIENT_LINEAR, GRADIENT_RADIAL, GRADIENT_SWEEP})
-public @interface GradientTypes {
-}
+@kotlin.annotation.Retention(AnnotationRetention.SOURCE)
+@IntDef(
+    BaseModeRenderer.INVALID_GRADIENT,
+    BaseModeRenderer.GRADIENT_LINEAR,
+    BaseModeRenderer.GRADIENT_RADIAL,
+    BaseModeRenderer.GRADIENT_SWEEP
+)
+annotation class GradientTypes 

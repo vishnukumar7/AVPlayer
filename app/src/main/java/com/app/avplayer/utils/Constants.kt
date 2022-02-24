@@ -1,5 +1,6 @@
 package com.app.avplayer.utils
 
+import android.content.Context
 import androidx.fragment.app.Fragment
 
 object Constants {
@@ -55,5 +56,20 @@ object Constants {
         else
             return "$mins:$secs"
 
+    }
+
+    fun isUpdated(context: Context,timeStamp: Long): Boolean{
+        val pref=context.getSharedPreferences("player_pref",Context.MODE_PRIVATE)
+        val delay=1000*60*60*6
+        var lastUpdated=pref.getLong("updated",0)
+        lastUpdated += delay
+        return lastUpdated<timeStamp
+    }
+
+    fun setUpdatedTime(context: Context,timeStamp: Long){
+        val pref=context.getSharedPreferences("player_pref",Context.MODE_PRIVATE)
+        val editor=pref.edit()
+        editor.putLong("updated",timeStamp)
+        editor.apply()
     }
 }

@@ -17,6 +17,7 @@ import com.app.avplayer.R
 import com.app.avplayer.databinding.ActivitySplashBinding
 import com.app.avplayer.helper.AppDatabase
 import com.app.avplayer.utils.AppUtils
+import com.app.avplayer.utils.Constants
 import javax.inject.Inject
 
 
@@ -74,6 +75,7 @@ appDatabase=(application as AVPlayerApplication).database
 
         override fun onPostExecute(result: Void?) {
             super.onPostExecute(result)
+            Constants.setUpdatedTime(this@SplashActivity,System.currentTimeMillis())
             openMainPage()
         }
 
@@ -92,17 +94,22 @@ appDatabase=(application as AVPlayerApplication).database
 
     private fun getImageFromExternal() {
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            if (Environment.isExternalStorageManager()) {
-                GetData(this).execute()
+        if(Constants.isUpdated(this,System.currentTimeMillis())){
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                if (Environment.isExternalStorageManager()) {
+                    GetData(this).execute()
+                } else {
+                    val intent = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION)
+                    val uri: Uri = Uri.fromParts("package", packageName, null)
+                    intent.data = uri
+                    startActivity(intent)
+                }
             } else {
-                val intent = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION)
-                val uri: Uri = Uri.fromParts("package", packageName, null)
-                intent.data = uri
-                startActivity(intent)
+                GetData(this).execute()
             }
-        } else {
-            GetData(this).execute()
+        }else{
+            updateProgressValues(6)
+            openMainPage()
         }
     }
 

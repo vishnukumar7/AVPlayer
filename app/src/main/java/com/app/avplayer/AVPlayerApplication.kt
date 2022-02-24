@@ -14,4 +14,6 @@ class AVPlayerApplication : Application() {
 
         val appRepository by lazy { AppRepository(database) }
 
+
+
 }

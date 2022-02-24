@@ -1,21 +1,19 @@
-package com.app.percentagechartview.callback;
+package com.app.percentagechartview.callback
 
-public interface AdaptiveColorProvider {
-
-    default int provideProgressColor(float progress) {
-        return -1;
+interface AdaptiveColorProvider {
+    fun provideProgressColor(progress: Float): Int {
+        return -1
     }
 
-    default int provideBackgroundColor(float progress) {
-        return -1;
+    fun provideBackgroundColor(progress: Float): Int {
+        return -1
     }
 
-    default int provideTextColor(float progress) {
-        return -1;
+    fun provideTextColor(progress: Float): Int {
+        return -1
     }
 
-    default int provideBackgroundBarColor(float progress) {
-        return -1;
+    fun provideBackgroundBarColor(progress: Float): Int {
+        return -1
     }
-
 }

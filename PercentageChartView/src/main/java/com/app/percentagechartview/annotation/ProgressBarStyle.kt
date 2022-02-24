@@ -13,18 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.app.percentagechartview.annotation
 
-package com.app.percentagechartview.annotation;
+import androidx.annotation.IntDef
+import com.app.percentagechartview.renderer.RingModeRenderer
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-
-import androidx.annotation.IntDef;
-
-import static com.app.percentagechartview.renderer.RingModeRenderer.CAP_ROUND;
-import static com.app.percentagechartview.renderer.RingModeRenderer.CAP_SQUARE;
-
-@Retention(RetentionPolicy.SOURCE)
-@IntDef({CAP_ROUND, CAP_SQUARE})
-public @interface ProgressBarStyle {
-}
+@kotlin.annotation.Retention(AnnotationRetention.SOURCE)
+@IntDef(RingModeRenderer.CAP_ROUND, RingModeRenderer.CAP_SQUARE)
+annotation class ProgressBarStyle 

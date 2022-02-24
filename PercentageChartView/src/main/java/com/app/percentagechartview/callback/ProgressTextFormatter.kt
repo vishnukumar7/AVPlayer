@@ -1,10 +1,5 @@
-package com.app.percentagechartview.callback;
+package com.app.percentagechartview.callback
 
-import androidx.annotation.NonNull;
-
-public interface ProgressTextFormatter {
-
-    @NonNull
-    CharSequence provideFormattedText(float progress);
-
+interface ProgressTextFormatter {
+    fun provideFormattedText(progress: Float): CharSequence
 }

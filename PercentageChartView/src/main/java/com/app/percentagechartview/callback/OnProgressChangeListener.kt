@@ -1,7 +1,5 @@
-package com.app.percentagechartview.callback;
+package com.app.percentagechartview.callback
 
-public interface OnProgressChangeListener {
-
-    void onProgressChanged(float progress);
-
+interface OnProgressChangeListener {
+    fun onProgressChanged(progress: Float)
 }

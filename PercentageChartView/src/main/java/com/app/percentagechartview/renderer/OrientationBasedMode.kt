@@ -13,13 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.app.percentagechartview.renderer
 
-package com.app.percentagechartview.renderer;
-
-public interface OrientationBasedMode {
-
-    void setOrientation(int orientation);
-
-    int getOrientation();
-
+interface OrientationBasedMode {
+    var orientation: Int
 }

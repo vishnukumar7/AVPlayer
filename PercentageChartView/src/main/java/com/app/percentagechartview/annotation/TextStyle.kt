@@ -13,17 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.app.percentagechartview.annotation
 
-package com.app.percentagechartview.annotation;
+import android.graphics.Typeface
+import androidx.annotation.IntDef
 
-import android.graphics.Typeface;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-
-import androidx.annotation.IntDef;
-
-@Retention(RetentionPolicy.SOURCE)
-@IntDef({Typeface.NORMAL,  Typeface.BOLD, Typeface.ITALIC, Typeface.BOLD_ITALIC})
-public @interface TextStyle {
-}
+@kotlin.annotation.Retention(AnnotationRetention.SOURCE)
+@IntDef(Typeface.NORMAL, Typeface.BOLD, Typeface.ITALIC, Typeface.BOLD_ITALIC)
+annotation class TextStyle 

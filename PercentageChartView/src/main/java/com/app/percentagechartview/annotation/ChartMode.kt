@@ -13,19 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.app.percentagechartview.annotation
 
-package com.app.percentagechartview.annotation;
+import androidx.annotation.IntDef
+import com.app.percentagechartview.renderer.BaseModeRenderer
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-
-import androidx.annotation.IntDef;
-
-import static com.app.percentagechartview.renderer.BaseModeRenderer.MODE_FILL;
-import static com.app.percentagechartview.renderer.BaseModeRenderer.MODE_PIE;
-import static com.app.percentagechartview.renderer.BaseModeRenderer.MODE_RING;
-
-@Retention(RetentionPolicy.SOURCE)
-@IntDef({MODE_PIE, MODE_RING, MODE_FILL})
-public @interface ChartMode {
-}
+@kotlin.annotation.Retention(AnnotationRetention.SOURCE)
+@IntDef(BaseModeRenderer.MODE_PIE, BaseModeRenderer.MODE_RING, BaseModeRenderer.MODE_FILL)
+annotation class ChartMode 

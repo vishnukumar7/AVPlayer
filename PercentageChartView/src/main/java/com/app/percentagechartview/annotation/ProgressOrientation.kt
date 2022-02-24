@@ -13,19 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.app.percentagechartview.annotation
 
-package com.app.percentagechartview.annotation;
+import androidx.annotation.IntDef
+import com.app.percentagechartview.renderer.BaseModeRenderer
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-
-import androidx.annotation.IntDef;
-
-import static com.app.percentagechartview.renderer.BaseModeRenderer.INVALID_ORIENTATION;
-import static com.app.percentagechartview.renderer.BaseModeRenderer.ORIENTATION_CLOCKWISE;
-import static com.app.percentagechartview.renderer.BaseModeRenderer.ORIENTATION_COUNTERCLOCKWISE;
-
-@Retention(RetentionPolicy.SOURCE)
-@IntDef({INVALID_ORIENTATION, ORIENTATION_CLOCKWISE, ORIENTATION_COUNTERCLOCKWISE})
-public @interface ProgressOrientation {
-}
+@kotlin.annotation.Retention(AnnotationRetention.SOURCE)
+@IntDef(
+    BaseModeRenderer.INVALID_ORIENTATION,
+    BaseModeRenderer.ORIENTATION_CLOCKWISE,
+    BaseModeRenderer.ORIENTATION_COUNTERCLOCKWISE
+)
+annotation class ProgressOrientation 

@@ -13,382 +13,406 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.app.percentagechartview.renderer
 
-package com.app.percentagechartview.renderer;
+import android.animation.ArgbEvaluator
+import android.animation.ValueAnimator
+import android.content.res.TypedArray
+import android.graphics.*
+import android.graphics.Paint.Cap
+import android.util.TypedValue
+import com.app.percentagechartview.IPercentageChartView
+import com.app.percentagechartview.R
+import com.app.percentagechartview.callback.AdaptiveColorProvider
 
-
-import android.animation.ArgbEvaluator;
-import android.animation.ValueAnimator;
-import android.content.res.TypedArray;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.LinearGradient;
-import android.graphics.Matrix;
-import android.graphics.Paint;
-import android.graphics.RadialGradient;
-import android.graphics.RectF;
-import android.graphics.Shader;
-import android.graphics.SweepGradient;
-import android.util.TypedValue;
-
-import androidx.annotation.Nullable;
-
-import com.app.percentagechartview.IPercentageChartView;
-import com.app.percentagechartview.R;
-import com.app.percentagechartview.callback.AdaptiveColorProvider;
-import com.app.percentagechartview.renderer.OrientationBasedMode;
-
-
-public class RingModeRenderer extends BaseModeRenderer implements OrientationBasedMode {
-
-    // BACKGROUND BAR
-    private static final float DEFAULT_BG_BAR_DP_WIDTH = 16;
-
-    private Paint mBackgroundBarPaint;
-    private boolean mDrawBackgroundBar;
-    private float mBackgroundBarThickness;
-    private int mBackgroundBarColor;
-    private int mProvidedBgBarColor;
-
-    //PROGRESS BAR
-    private static final float DEFAULT_PROGRESS_BAR_DP_WIDTH = 16;
-    public static final int CAP_ROUND = 0;
-    public static final int CAP_SQUARE = 1;
-
-    private Paint.Cap mProgressBarStyle;
-    private float mProgressBarThickness;
+class RingModeRenderer : BaseModeRenderer, OrientationBasedMode {
+    private var mBackgroundBarPaint: Paint? = null
+    private var mDrawBackgroundBar = false
+    private var mBackgroundBarThickness = 0f
+    private var mBackgroundBarColor = 0
+    private var mProvidedBgBarColor = 0
+    private var mProgressBarStyle: Cap? = null
+    private var mProgressBarThickness = 0f
 
     //TO PUSH PROGRESS BAR OUT OF SWEEP GRADIENT'S WAY
-    private float tweakAngle;
+    private var tweakAngle = 0f
 
-    public RingModeRenderer(IPercentageChartView view) {
-        super(view);
-        init();
-        setup();
+    constructor(view: IPercentageChartView) : super(view) {
+        init()
+        setup()
     }
 
-    public RingModeRenderer(IPercentageChartView view, TypedArray attrs) {
-        super(view, attrs);
-        init(attrs);
-        setup();
+    constructor(view: IPercentageChartView, attrs: TypedArray) : super(view, attrs) {
+        init(attrs)
+        setup()
     }
 
-    private void init(TypedArray attrs) {
+    private fun init(attrs: TypedArray) {
         //BACKGROUND BAR DRAW STATE
-        mDrawBackgroundBar = attrs.getBoolean(R.styleable.PercentageChartView_pcv_drawBackgroundBar, true);
+        mDrawBackgroundBar =
+            attrs.getBoolean(R.styleable.PercentageChartView_pcv_drawBackgroundBar, true)
 
         //BACKGROUND WIDTH
-        mBackgroundBarThickness = attrs.getDimensionPixelSize(com.app.percentagechartview.R.styleable.PercentageChartView_pcv_backgroundBarThickness,
-                (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, DEFAULT_BG_BAR_DP_WIDTH, mView.getViewContext().getResources().getDisplayMetrics()));
+        mBackgroundBarThickness = attrs.getDimensionPixelSize(
+            R.styleable.PercentageChartView_pcv_backgroundBarThickness,
+            TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP,
+                DEFAULT_BG_BAR_DP_WIDTH,
+                mView!!.viewContext.resources.displayMetrics
+            ).toInt()
+        ).toFloat()
 
         //BACKGROUND BAR COLOR
-        mBackgroundBarColor = attrs.getColor(R.styleable.PercentageChartView_pcv_backgroundBarColor, Color.BLACK);
+        mBackgroundBarColor =
+            attrs.getColor(R.styleable.PercentageChartView_pcv_backgroundBarColor, Color.BLACK)
 
         //PROGRESS WIDTH
-        mProgressBarThickness = attrs.getDimensionPixelSize(R.styleable.PercentageChartView_pcv_progressBarThickness,
-                (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, DEFAULT_PROGRESS_BAR_DP_WIDTH, mView.getViewContext().getResources().getDisplayMetrics()));
+        mProgressBarThickness = attrs.getDimensionPixelSize(
+            R.styleable.PercentageChartView_pcv_progressBarThickness,
+            TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP,
+                DEFAULT_PROGRESS_BAR_DP_WIDTH,
+                mView!!.viewContext.resources.displayMetrics
+            ).toInt()
+        ).toFloat()
 
         //PROGRESS BAR STROKE STYLE
-        int cap = attrs.getInt(com.app.percentagechartview.R.styleable.PercentageChartView_pcv_progressBarStyle, CAP_ROUND);
-        mProgressBarStyle = (cap == CAP_ROUND) ? Paint.Cap.ROUND : Paint.Cap.BUTT;
+        val cap = attrs.getInt(R.styleable.PercentageChartView_pcv_progressBarStyle, CAP_ROUND)
+        mProgressBarStyle = if (cap == CAP_ROUND) Cap.ROUND else Cap.BUTT
     }
 
-    private void init() {
+    private fun init() {
         //DRAW BACKGROUND BAR
-        mDrawBackgroundBar = true;
+        mDrawBackgroundBar = true
 
         //BACKGROUND WIDTH
-        mBackgroundBarThickness = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, DEFAULT_BG_BAR_DP_WIDTH, mView.getViewContext().getResources().getDisplayMetrics());
+        mBackgroundBarThickness = TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP,
+            DEFAULT_BG_BAR_DP_WIDTH,
+            mView!!.viewContext.resources.displayMetrics
+        )
 
         //BACKGROUND BAR COLOR
-        mBackgroundBarColor = Color.BLACK;
+        mBackgroundBarColor = Color.BLACK
 
         //PROGRESS BAR WIDTH
-        mProgressBarThickness = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, DEFAULT_PROGRESS_BAR_DP_WIDTH, mView.getViewContext().getResources().getDisplayMetrics());
+        mProgressBarThickness = TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP,
+            DEFAULT_PROGRESS_BAR_DP_WIDTH,
+            mView!!.viewContext.resources.displayMetrics
+        )
 
         //PROGRESS BAR STROKE STYLE
-        mProgressBarStyle = Paint.Cap.ROUND;
+        mProgressBarStyle = Cap.ROUND
     }
 
-    @Override
-    void setup() {
-        super.setup();
-        mProvidedBgBarColor = -1;
-        tweakAngle = 0;
-        updateDrawingAngles();
+    public override fun setup() {
+        super.setup()
+        mProvidedBgBarColor = -1
+        tweakAngle = 0f
+        updateDrawingAngles()
 
         //BACKGROUND BAR
-        mBackgroundBarPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        mBackgroundBarPaint.setStyle(Paint.Style.STROKE);
-        mBackgroundBarPaint.setColor(mBackgroundBarColor);
-        mBackgroundBarPaint.setStrokeWidth(mBackgroundBarThickness);
-        mBackgroundBarPaint.setStrokeCap(mProgressBarStyle);
+        mBackgroundBarPaint = Paint(Paint.ANTI_ALIAS_FLAG)
+        mBackgroundBarPaint!!.style = Paint.Style.STROKE
+        mBackgroundBarPaint!!.color = mBackgroundBarColor
+        mBackgroundBarPaint!!.strokeWidth = mBackgroundBarThickness
+        mBackgroundBarPaint!!.strokeCap = mProgressBarStyle
 
         //PROGRESS PAINT
-        mProgressPaint.setStyle(Paint.Style.STROKE);
-        mProgressPaint.setStrokeWidth(mProgressBarThickness);
-        mProgressPaint.setStrokeCap(mProgressBarStyle);
+        mProgressPaint!!.style = Paint.Style.STROKE
+        mProgressPaint!!.strokeWidth = mProgressBarThickness
+        mProgressPaint!!.strokeCap = mProgressBarStyle
     }
 
-    @Override
-    public void measure(int w, int h, int paddingLeft, int paddingTop, int paddingRight, int paddingBottom) {
-        int diameter = Math.min(w, h);
-        float maxOffset = Math.max(mProgressBarThickness, mBackgroundBarThickness);
-
-        int centerX = w / 2;
-        int centerY = h / 2;
-        float radius = (diameter - maxOffset) / 2;
-
-        mCircleBounds.set(centerX - radius,
-                centerY - radius,
-                centerX + radius,
-                centerY + radius);
-
-        float backgroundRadius = radius - (mBackgroundBarThickness / 2) + 1;
-
-        mBackgroundBounds.set(centerX - backgroundRadius,
-                centerY - backgroundRadius,
-                centerX + backgroundRadius,
-                centerY + backgroundRadius);
-
-        setupGradientColors(mCircleBounds);
-        updateText();
+    override fun measure(
+        w: Int,
+        h: Int,
+        paddingLeft: Int,
+        paddingTop: Int,
+        paddingRight: Int,
+        paddingBottom: Int
+    ) {
+        val diameter = Math.min(w, h)
+        val maxOffset = Math.max(mProgressBarThickness, mBackgroundBarThickness)
+        val centerX = w / 2
+        val centerY = h / 2
+        val radius = (diameter - maxOffset) / 2
+        mCircleBounds!![centerX - radius, centerY - radius, centerX + radius] = centerY + radius
+        val backgroundRadius = radius - mBackgroundBarThickness / 2 + 1
+        mBackgroundBounds!![centerX - backgroundRadius, centerY - backgroundRadius, centerX + backgroundRadius] =
+            centerY + backgroundRadius
+        setupGradientColors(mCircleBounds!!)
+        updateText()
     }
 
-    @Override
-    public void draw(Canvas canvas) {
+    override fun draw(canvas: Canvas) {
         //BACKGROUND
         if (mDrawBackground) {
-            canvas.drawArc(mBackgroundBounds, 0, 360, false, mBackgroundPaint);
+            mBackgroundBounds?.let { mBackgroundPaint?.let { it1 ->
+                canvas.drawArc(it, 0f, 360f, false,
+                    it1
+                )
+            } }
         }
 
         //BACKGROUND BAR
         if (mDrawBackgroundBar) {
             if (mBackgroundBarThickness <= mProgressBarThickness) {
-                canvas.drawArc(mCircleBounds, mStartAngle + tweakAngle, -(360 - mSweepAngle + tweakAngle), false, mBackgroundBarPaint);
+                mCircleBounds?.let {
+                    canvas.drawArc(
+                        it,
+                        mStartAngle + tweakAngle,
+                        -(360 - mSweepAngle + tweakAngle),
+                        false,
+                        mBackgroundBarPaint!!
+                    )
+                }
             } else {
-                canvas.drawArc(mCircleBounds, 0, 360, false, mBackgroundBarPaint);
+                mCircleBounds?.let { canvas.drawArc(it, 0f, 360f, false, mBackgroundBarPaint!!) }
             }
         }
 
         //FOREGROUND
-        if (mProgress != 0) {
-            canvas.drawArc(mCircleBounds, mStartAngle + tweakAngle, mSweepAngle, false, mProgressPaint);
+        if (mProgress != 0f) {
+            mCircleBounds?.let {
+                mProgressPaint?.let { it1 ->
+                    canvas.drawArc(
+                        it,
+                        mStartAngle + tweakAngle,
+                        mSweepAngle,
+                        false,
+                        it1
+                    )
+                }
+            }
         }
 
         //TEXT
-        drawText(canvas);
+        drawText(canvas)
     }
 
-    @Override
-    public void destroy() {
-        super.destroy();
+    override fun destroy() {
+        super.destroy()
         if (mBgBarColorAnimator != null) {
-            if (mBgBarColorAnimator.isRunning()) {
-                mBgBarColorAnimator.cancel();
+            if (mBgBarColorAnimator!!.isRunning) {
+                mBgBarColorAnimator!!.cancel()
             }
-            mBgBarColorAnimator.removeAllUpdateListeners();
+            mBgBarColorAnimator!!.removeAllUpdateListeners()
         }
-        mBgBarColorAnimator = null;
-        mBackgroundBarPaint = null;
+        mBgBarColorAnimator = null
+        mBackgroundBarPaint = null
     }
 
-    @Override
-    public void setAdaptiveColorProvider(@Nullable AdaptiveColorProvider adaptiveColorProvider) {
+    override fun setAdaptiveColorProvider(adaptiveColorProvider: AdaptiveColorProvider?) {
         if (adaptiveColorProvider == null) {
-            mProgressColorAnimator = mBackgroundColorAnimator = mTextColorAnimator = mBgBarColorAnimator = null;
-            this.mAdaptiveColorProvider = null;
-            mTextPaint.setColor(mTextColor);
-            mBackgroundBarPaint.setColor(mBackgroundBarColor);
-            mBackgroundPaint.setColor(mBackgroundColor);
-            mProgressPaint.setColor(mProgressColor);
-            mView.postInvalidate();
-            return;
+            mBgBarColorAnimator = null
+            mTextColorAnimator = mBgBarColorAnimator
+            mBackgroundColorAnimator = mTextColorAnimator!!
+            mProgressColorAnimator = mBackgroundColorAnimator
+            mAdaptiveColorProvider = null
+            mTextPaint!!.color = mTextColor
+            mBackgroundBarPaint!!.color = mBackgroundBarColor
+            mBackgroundPaint!!.color = mBackgroundColor
+            mProgressPaint!!.color = mProgressColor
+            mView!!.postInvalidate()
+            return
         }
-
-        this.mAdaptiveColorProvider = adaptiveColorProvider;
-
-        setupColorAnimations();
-        updateProvidedColors(mProgress);
-        mView.postInvalidate();
+        mAdaptiveColorProvider = adaptiveColorProvider
+        setupColorAnimations()
+        updateProvidedColors(mProgress)
+        mView!!.postInvalidate()
     }
 
-    @Override
-    void setupGradientColors(RectF bounds) {
-        if (mGradientType == -1) return;
-
-        double ab = Math.pow(bounds.bottom - bounds.centerY(), 2);
-        tweakAngle = (float) Math.toDegrees(Math.acos((2 * ab - Math.pow(mProgressBarThickness / 2, 2)) / (2 * ab)));
-
-        switch (mGradientType) {
-            default:
-            case GRADIENT_LINEAR:
-                mGradientShader = new LinearGradient(bounds.centerX(), bounds.top, bounds.centerX(), bounds.bottom, mGradientColors, mGradientDistributions, Shader.TileMode.CLAMP);
-                updateGradientAngle(mStartAngle);
-                break;
-
-            case GRADIENT_RADIAL:
-                mGradientShader = new RadialGradient(bounds.centerX(), bounds.centerY(), bounds.bottom - bounds.centerY(), mGradientColors, mGradientDistributions, Shader.TileMode.MIRROR);
-                break;
-
-            case GRADIENT_SWEEP:
-                mGradientShader = new SweepGradient(bounds.centerX(), bounds.centerY(), mGradientColors, mGradientDistributions);
-
-                if (!mView.isInEditMode()) {
+    public override fun setupGradientColors(bounds: RectF) {
+        if (mGradientType == -1) return
+        val ab = Math.pow((bounds.bottom - bounds.centerY()).toDouble(), 2.0)
+        tweakAngle = Math.toDegrees(
+            Math.acos(
+                (2 * ab - Math.pow(
+                    (mProgressBarThickness / 2).toDouble(),
+                    2.0
+                )) / (2 * ab)
+            )
+        ).toFloat()
+        when (mGradientType) {
+            GRADIENT_LINEAR -> {
+                mGradientShader = LinearGradient(
+                    bounds.centerX(),
+                    bounds.top,
+                    bounds.centerX(),
+                    bounds.bottom,
+                    mGradientColors,
+                    mGradientDistributions,
+                    Shader.TileMode.CLAMP
+                )
+                updateGradientAngle(mStartAngle)
+            }
+            GRADIENT_RADIAL -> mGradientShader = RadialGradient(
+                bounds.centerX(),
+                bounds.centerY(),
+                bounds.bottom - bounds.centerY(),
+                mGradientColors,
+                mGradientDistributions,
+                Shader.TileMode.MIRROR
+            )
+            GRADIENT_SWEEP -> {
+                mGradientShader = SweepGradient(
+                    bounds.centerX(),
+                    bounds.centerY(),
+                    mGradientColors,
+                    mGradientDistributions
+                )
+                if (!mView!!.isInEditMode) {
                     // THIS BREAKS SWEEP GRADIENT'S PREVIEW MODE
-                    updateGradientAngle(mStartAngle);
+                    updateGradientAngle(mStartAngle)
                 }
-                break;
+            }
+            else -> {
+                mGradientShader = LinearGradient(
+                    bounds.centerX(),
+                    bounds.top,
+                    bounds.centerX(),
+                    bounds.bottom,
+                    mGradientColors,
+                    mGradientDistributions,
+                    Shader.TileMode.CLAMP
+                )
+                updateGradientAngle(mStartAngle)
+            }
         }
-
-        mProgressPaint.setShader(mGradientShader);
+        mProgressPaint!!.shader = mGradientShader
     }
 
-    @Override
-    void setupColorAnimations() {
-        super.setupColorAnimations();
+    public override fun setupColorAnimations() {
+        super.setupColorAnimations()
         if (mBgBarColorAnimator == null) {
-            mBgBarColorAnimator = ValueAnimator.ofObject(new ArgbEvaluator(), mBackgroundBarColor, mProvidedBgBarColor);
-            mBgBarColorAnimator.addUpdateListener(animation -> {
-                mProvidedBgBarColor = (int) animation.getAnimatedValue();
-                mBackgroundBarPaint.setColor(mProvidedBgBarColor);
-            });
-            mBgBarColorAnimator.setDuration(mAnimDuration);
+            mBgBarColorAnimator =
+                ValueAnimator.ofObject(ArgbEvaluator(), mBackgroundBarColor, mProvidedBgBarColor)
+            mBgBarColorAnimator!!.addUpdateListener { animation: ValueAnimator ->
+                mProvidedBgBarColor = animation.animatedValue as Int
+                mBackgroundBarPaint!!.color = mProvidedBgBarColor
+            }
+            mBgBarColorAnimator!!.duration = mAnimDuration.toLong()
         }
     }
 
-    @Override
-    void cancelAnimations() {
-        super.cancelAnimations();
-        if (mBgBarColorAnimator != null && mBgBarColorAnimator.isRunning()) {
-            mBgBarColorAnimator.cancel();
+    public override fun cancelAnimations() {
+        super.cancelAnimations()
+        if (mBgBarColorAnimator != null && mBgBarColorAnimator!!.isRunning) {
+            mBgBarColorAnimator?.cancel()
         }
     }
 
-    @Override
-    void updateAnimations(float progress) {
-        super.updateAnimations(progress);
-
-        if (mAdaptiveColorProvider == null) return;
-
-        int providedBgBarColor = mAdaptiveColorProvider.provideBackgroundBarColor(progress);
+    public override fun updateAnimations(progress: Float) {
+        super.updateAnimations(progress)
+        if (mAdaptiveColorProvider == null) return
+        val providedBgBarColor = mAdaptiveColorProvider!!.provideBackgroundBarColor(progress)
         if (providedBgBarColor != -1 && providedBgBarColor != mProvidedBgBarColor) {
-            int startColor = mProvidedBgBarColor != -1 ? mProvidedBgBarColor : mBackgroundBarColor;
-            mBgBarColorAnimator.setIntValues(startColor, providedBgBarColor);
-            mBgBarColorAnimator.start();
+            val startColor =
+                if (mProvidedBgBarColor != -1) mProvidedBgBarColor else mBackgroundBarColor
+            mBgBarColorAnimator?.setIntValues(startColor, providedBgBarColor)
+            mBgBarColorAnimator?.start()
         }
     }
 
-    @Override
-    void updateProvidedColors(float progress) {
-        super.updateProvidedColors(progress);
-        if (mAdaptiveColorProvider == null) return;
-        int providedBgBarColor = mAdaptiveColorProvider.provideBackgroundBarColor(progress);
+    public override fun updateProvidedColors(progress: Float) {
+        super.updateProvidedColors(progress)
+        if (mAdaptiveColorProvider == null) return
+        val providedBgBarColor = mAdaptiveColorProvider!!.provideBackgroundBarColor(progress)
         if (providedBgBarColor != -1 && providedBgBarColor != mProvidedBgBarColor) {
-            mProvidedBgBarColor = providedBgBarColor;
-            mBackgroundBarPaint.setColor(mProvidedBgBarColor);
+            mProvidedBgBarColor = providedBgBarColor
+            mBackgroundBarPaint!!.color = mProvidedBgBarColor
         }
     }
 
-    @Override
-    void updateDrawingAngles() {
-        switch (orientation) {
-            case ORIENTATION_COUNTERCLOCKWISE:
-                mSweepAngle = -(mProgress / DEFAULT_MAX * 360);
-                break;
-
-            default:
-            case ORIENTATION_CLOCKWISE:
-                mSweepAngle = mProgress / DEFAULT_MAX * 360;
-                break;
+    public override fun updateDrawingAngles() {
+        mSweepAngle = when (orientation) {
+            ORIENTATION_COUNTERCLOCKWISE -> -(mProgress / DEFAULT_MAX * 360)
+            ORIENTATION_CLOCKWISE -> mProgress / DEFAULT_MAX * 360
+            else -> mProgress / DEFAULT_MAX * 360
         }
     }
 
-    @Override
-    void updateGradientAngle(float angle) {
-        if (mGradientType == -1 || mGradientType == GRADIENT_RADIAL) return;
-        Matrix matrix = new Matrix();
-        matrix.postRotate(angle, mCircleBounds.centerX(), mCircleBounds.centerY());
-        mGradientShader.setLocalMatrix(matrix);
+    public override fun updateGradientAngle(angle: Float) {
+        if (mGradientType == -1 || mGradientType == GRADIENT_RADIAL) return
+        val matrix = Matrix()
+        matrix.postRotate(angle, mCircleBounds!!.centerX(), mCircleBounds!!.centerY())
+        mGradientShader!!.setLocalMatrix(matrix)
     }
 
-    public int getOrientation() {
-        return orientation;
-    }
+    override var orientation: Int
+        get() = orientation
+        set(orientation) {
+            if (this.orientation == orientation) return
+            this.orientation = orientation
+            updateDrawingAngles()
+        }
 
-    public void setOrientation(int orientation) {
-        if (this.orientation == orientation) return;
-        this.orientation = orientation;
-        updateDrawingAngles();
-    }
-
-    @Override
-    public void setStartAngle(float startAngle) {
-        if (this.mStartAngle == startAngle) return;
-        this.mStartAngle = startAngle;
+    override fun setStartAngle(startAngle: Float) {
+        if (mStartAngle == startAngle) return
+        mStartAngle = startAngle
         if (mGradientType == GRADIENT_SWEEP) {
-            updateGradientAngle(startAngle);
+            updateGradientAngle(startAngle)
         }
     }
 
     // DRAW BACKGROUND BAR STATE
-    public boolean isDrawBackgroundBarEnabled() {
-        return mDrawBackgroundBar;
-    }
-
-    public void setDrawBackgroundBarEnabled(boolean drawBackgroundBar) {
-        if (mDrawBackgroundBar == drawBackgroundBar) return;
-        this.mDrawBackgroundBar = drawBackgroundBar;
-    }
+    var isDrawBackgroundBarEnabled: Boolean
+        get() = mDrawBackgroundBar
+        set(drawBackgroundBar) {
+            if (mDrawBackgroundBar == drawBackgroundBar) return
+            mDrawBackgroundBar = drawBackgroundBar
+        }
 
     //BACKGROUND BAR COLOR
-    public int getBackgroundBarColor() {
-        if (!mDrawBackgroundBar) return -1;
-        return mBackgroundBarColor;
-    }
-
-    public void setBackgroundBarColor(int backgroundBarColor) {
-        if (!mDrawBackgroundBar || (mAdaptiveColorProvider != null && mAdaptiveColorProvider.provideBackgroundBarColor(mProgress) != -1) || this.mBackgroundBarColor == backgroundBarColor)
-            return;
-        this.mBackgroundBarColor = backgroundBarColor;
-        mBackgroundBarPaint.setColor(mBackgroundBarColor);
-    }
+    var backgroundBarColor: Int
+        get() = if (!mDrawBackgroundBar) -1 else mBackgroundBarColor
+        set(backgroundBarColor) {
+            if (!mDrawBackgroundBar || mAdaptiveColorProvider != null && mAdaptiveColorProvider!!.provideBackgroundBarColor(
+                    mProgress
+                ) != -1 || mBackgroundBarColor == backgroundBarColor
+            ) return
+            mBackgroundBarColor = backgroundBarColor
+            mBackgroundBarPaint!!.color = mBackgroundBarColor
+        }
 
     //BACKGROUND BAR THICKNESS
-    public float getBackgroundBarThickness() {
-        return mBackgroundBarThickness;
-    }
-
-    public void setBackgroundBarThickness(float backgroundBarThickness) {
-        if (this.mBackgroundBarThickness == backgroundBarThickness) return;
-        this.mBackgroundBarThickness = backgroundBarThickness;
-        mBackgroundBarPaint.setStrokeWidth(backgroundBarThickness);
-        measure(mView.getWidth(), mView.getHeight(), 0, 0, 0, 0);
-    }
+    var backgroundBarThickness: Float
+        get() = mBackgroundBarThickness
+        set(backgroundBarThickness) {
+            if (mBackgroundBarThickness == backgroundBarThickness) return
+            mBackgroundBarThickness = backgroundBarThickness
+            mBackgroundBarPaint!!.strokeWidth = backgroundBarThickness
+            measure(mView!!.width, mView!!.height, 0, 0, 0, 0)
+        }
 
     //PROGRESS BAR THICKNESS
-    public float getProgressBarThickness() {
-        return mProgressBarThickness;
-    }
-
-    public void setProgressBarThickness(float progressBarThickness) {
-        if (this.mProgressBarThickness == progressBarThickness) return;
-        this.mProgressBarThickness = progressBarThickness;
-        mProgressPaint.setStrokeWidth(progressBarThickness);
-        measure(mView.getWidth(), mView.getHeight(), 0, 0, 0, 0);
-    }
+    var progressBarThickness: Float
+        get() = mProgressBarThickness
+        set(progressBarThickness) {
+            if (mProgressBarThickness == progressBarThickness) return
+            mProgressBarThickness = progressBarThickness
+            mProgressPaint!!.strokeWidth = progressBarThickness
+            measure(mView!!.width, mView!!.height, 0, 0, 0, 0)
+        }
 
     //PROGRESS BAR STYLE
-    public int getProgressBarStyle() {
-        return (mProgressBarStyle == Paint.Cap.ROUND) ? CAP_ROUND : CAP_SQUARE;
-    }
-
-    public void setProgressBarStyle(int progressBarStyle) {
-        if (progressBarStyle < 0 || progressBarStyle > 1) {
-            throw new IllegalArgumentException("Text style must be a valid TextStyle constant.");
+    var progressBarStyle: Int
+        get() = if (mProgressBarStyle == Cap.ROUND) CAP_ROUND else CAP_SQUARE
+        set(progressBarStyle) {
+            require(!(progressBarStyle < 0 || progressBarStyle > 1)) { "Text style must be a valid TextStyle constant." }
+            mProgressBarStyle = if (progressBarStyle == CAP_ROUND) Cap.ROUND else Cap.BUTT
+            mProgressPaint!!.strokeCap = mProgressBarStyle
         }
-        mProgressBarStyle = (progressBarStyle == CAP_ROUND) ? Paint.Cap.ROUND : Paint.Cap.BUTT;
-        mProgressPaint.setStrokeCap(mProgressBarStyle);
-    }
 
+    companion object {
+        // BACKGROUND BAR
+        private const val DEFAULT_BG_BAR_DP_WIDTH = 16f
+
+        //PROGRESS BAR
+        private const val DEFAULT_PROGRESS_BAR_DP_WIDTH = 16f
+        const val CAP_ROUND = 0
+        const val CAP_SQUARE = 1
+    }
 }

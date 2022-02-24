@@ -3,6 +3,7 @@ package com.app.avplayer.activity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.view.View.GONE
@@ -35,11 +36,12 @@ class VideoPlayActivity : BaseActivity(), View.OnTouchListener {
         exoVideoPlayer = findViewById(R.id.videoExoPlayer)
         exoVideoPlayer.setOnClickListener(object : DoubleClickListener() {
             override fun onSingleClick(v: View?) {
+                Log.d(TAG, "onSingleClick: ")
                 toolbar()
             }
 
             override fun onDoubleClick(v: View?) {
-
+                Log.d(TAG, "onDoubleClick: ")
             }
         })
         videoList = intent.extras?.get(Constants.TAG_DATA) as Video
@@ -52,19 +54,21 @@ class VideoPlayActivity : BaseActivity(), View.OnTouchListener {
 
         binding.forwardVideo.setOnClickListener(object : DoubleClickListener() {
             override fun onSingleClick(v: View?) {
-
+                Log.d(TAG, "onSingleClick: ")
             }
 
             override fun onDoubleClick(v: View?) {
+                Log.d(TAG, "onDoubleClick: ")
                 exoVideoPlayer.forwordvideo()
             }
         })
         binding.backwardVideo.setOnClickListener(object : DoubleClickListener() {
             override fun onSingleClick(v: View?) {
-
+                Log.d(TAG, "onSingleClick: ")
             }
 
             override fun onDoubleClick(v: View?) {
+                Log.d(TAG, "onDoubleClick: ")
                 exoVideoPlayer.backwardVideo()
             }
 
@@ -88,6 +92,6 @@ class VideoPlayActivity : BaseActivity(), View.OnTouchListener {
     }
 
     override fun onTouch(v: View?, event: MotionEvent?): Boolean {
-        TODO("Not yet implemented")
+        return true
     }
 }

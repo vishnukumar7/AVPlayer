@@ -13,13 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.app.percentagechartview.renderer
 
-package com.app.percentagechartview.renderer;
-
-public interface OffsetEnabledMode {
-
-    int getBackgroundOffset();
-
-    void setBackgroundOffset(int backgroundOffset);
-
+interface OffsetEnabledMode {
+    var backgroundOffset: Int
 }

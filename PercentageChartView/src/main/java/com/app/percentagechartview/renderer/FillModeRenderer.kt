@@ -13,161 +13,178 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.app.percentagechartview.renderer
 
-package com.app.percentagechartview.renderer;
+import android.content.res.TypedArray
+import android.graphics.*
+import com.app.percentagechartview.IPercentageChartView
+import com.app.percentagechartview.callback.AdaptiveColorProvider
+import kotlin.math.acos
+import kotlin.math.pow
+import kotlin.math.sqrt
 
-import android.content.res.TypedArray;
-import android.graphics.Canvas;
-import android.graphics.LinearGradient;
-import android.graphics.Matrix;
-import android.graphics.RadialGradient;
-import android.graphics.RectF;
-import android.graphics.Shader;
+class FillModeRenderer : BaseModeRenderer, OffsetEnabledMode {
+    private var mDirectionAngle = 0f
+    private var mBgSweepAngle = 0f
+    private var mRadius = 0f
 
-import androidx.annotation.Nullable;
-
-import com.app.percentagechartview.IPercentageChartView;
-import com.app.percentagechartview.callback.AdaptiveColorProvider;
-import com.app.percentagechartview.renderer.OffsetEnabledMode;
-
-public class FillModeRenderer extends BaseModeRenderer implements OffsetEnabledMode {
-
-    private float mDirectionAngle;
-    private float mBgSweepAngle;
-    private float mRadius;
-
-    public FillModeRenderer(IPercentageChartView view) {
-        super(view);
-        setup();
+    constructor(view: IPercentageChartView?) : super(view!!) {
+        setup()
     }
 
-    public FillModeRenderer(IPercentageChartView view, TypedArray attrs) {
-        super(view, attrs);
-        setup();
+    constructor(view: IPercentageChartView?, attrs: TypedArray?) : super(view!!, attrs!!) {
+        setup()
     }
 
-    @Override
-    void setup() {
-        super.setup();
-        this.mDirectionAngle = mStartAngle;
+    public override fun setup() {
+        super.setup()
+        mDirectionAngle = mStartAngle
     }
 
-    @Override
-    public void measure(int w, int h, int paddingLeft, int paddingTop, int paddingRight, int paddingBottom) {
-        int centerX = w / 2;
-        int centerY = h / 2;
-        mRadius = (float) Math.min(w, h) / 2;
-
-        mCircleBounds.set(centerX - mRadius,
-                centerY - mRadius,
-                centerX + mRadius,
-                centerY + mRadius);
-        measureBackgroundBounds();
-        updateDrawingAngles();
-        setupGradientColors(mCircleBounds);
-        updateText();
+    override fun measure(
+        w: Int,
+        h: Int,
+        paddingLeft: Int,
+        paddingTop: Int,
+        paddingRight: Int,
+        paddingBottom: Int
+    ) {
+        val centerX = w / 2
+        val centerY = h / 2
+        mRadius = w.coerceAtMost(h).toFloat() / 2
+        mCircleBounds?.set(centerX - mRadius, centerY - mRadius, centerX + mRadius,
+            centerY + mRadius
+        )
+        measureBackgroundBounds()
+        updateDrawingAngles()
+        mCircleBounds?.let { setupGradientColors(it) }
+        updateText()
     }
 
-    private void measureBackgroundBounds() {
-        mBackgroundBounds.set(mCircleBounds.left + mBackgroundOffset,
-                mCircleBounds.top + mBackgroundOffset,
-                mCircleBounds.right - mBackgroundOffset,
-                mCircleBounds.bottom - mBackgroundOffset);
+    private fun measureBackgroundBounds() {
+        mBackgroundBounds?.let {
+            it[mCircleBounds!!.left + mBackgroundOffset, mCircleBounds!!.top + mBackgroundOffset, mCircleBounds!!.right - mBackgroundOffset] =
+                mCircleBounds!!.bottom - mBackgroundOffset
+        }
     }
 
-    @Override
-    public void draw(Canvas canvas) {
+    override fun draw(canvas: Canvas) {
         //BACKGROUND
         if (mDrawBackground) {
-            canvas.drawArc(mBackgroundBounds, mStartAngle, mBgSweepAngle, false, mBackgroundPaint);
+            mBackgroundBounds?.let { mBackgroundPaint?.let { it1 ->
+                canvas.drawArc(it, mStartAngle, mBgSweepAngle, false,
+                    it1
+                )
+            } }
         }
 
         //FOREGROUND
-        canvas.drawArc(mCircleBounds, mStartAngle, mSweepAngle, false, mProgressPaint);
+        mCircleBounds?.let { mProgressPaint?.let { it1 ->
+            canvas.drawArc(it, mStartAngle, mSweepAngle, false,
+                it1
+            )
+        } }
 
         //TEXT
-        drawText(canvas);
+        canvas.let { drawText(it) }
     }
 
-    @Override
-    public void setAdaptiveColorProvider(@Nullable AdaptiveColorProvider adaptiveColorProvider) {
+    override fun setAdaptiveColorProvider(adaptiveColorProvider: AdaptiveColorProvider?) {
         if (adaptiveColorProvider == null) {
-            mProgressColorAnimator = mBackgroundColorAnimator = mTextColorAnimator = null;
-            this.mAdaptiveColorProvider = null;
-            mTextPaint.setColor(mTextColor);
-            mBackgroundPaint.setColor(mBackgroundColor);
-            mProgressPaint.setColor(mProgressColor);
-            mView.postInvalidate();
-            return;
+            mTextColorAnimator = null
+            mBackgroundColorAnimator = mTextColorAnimator!!
+            mProgressColorAnimator = mBackgroundColorAnimator
+            mAdaptiveColorProvider = null
+            mTextPaint!!.color = mTextColor
+            mBackgroundPaint!!.color = mBackgroundColor
+            mProgressPaint!!.color = mProgressColor
+            mView!!.postInvalidate()
+            return
         }
-
-        this.mAdaptiveColorProvider = adaptiveColorProvider;
-
-        setupColorAnimations();
-        updateProvidedColors(mProgress);
-        mView.postInvalidate();
+        mAdaptiveColorProvider = adaptiveColorProvider
+        setupColorAnimations()
+        updateProvidedColors(mProgress)
+        mView!!.postInvalidate()
     }
 
-    @Override
-    void setupGradientColors(RectF bounds) {
-        if (mGradientType == -1 || mGradientType == GRADIENT_SWEEP) return;
-
-        switch (mGradientType) {
-            default:
-            case GRADIENT_LINEAR:
-                mGradientShader = new LinearGradient(bounds.centerX(), bounds.top, bounds.centerX(), bounds.bottom, mGradientColors, mGradientDistributions, Shader.TileMode.CLAMP);
-                updateGradientAngle(mGradientAngle);
-                break;
-
-            case GRADIENT_RADIAL:
-                mGradientShader = new RadialGradient(bounds.centerX(), bounds.centerY(), bounds.bottom - bounds.centerY(), mGradientColors, mGradientDistributions, Shader.TileMode.MIRROR);
-                break;
+    public override fun setupGradientColors(bounds: RectF) {
+        if (mGradientType == -1 || mGradientType == GRADIENT_SWEEP) return
+        when (mGradientType) {
+            GRADIENT_LINEAR -> {
+                mGradientShader = LinearGradient(
+                    bounds.centerX(),
+                    bounds.top,
+                    bounds.centerX(),
+                    bounds.bottom,
+                    mGradientColors,
+                    mGradientDistributions,
+                    Shader.TileMode.CLAMP
+                )
+                updateGradientAngle(mGradientAngle)
+            }
+            GRADIENT_RADIAL -> mGradientShader = RadialGradient(
+                bounds.centerX(),
+                bounds.centerY(),
+                bounds.bottom - bounds.centerY(),
+                mGradientColors,
+                mGradientDistributions,
+                Shader.TileMode.MIRROR
+            )
+            else -> {
+                mGradientShader = LinearGradient(
+                    bounds.centerX(),
+                    bounds.top,
+                    bounds.centerX(),
+                    bounds.bottom,
+                    mGradientColors,
+                    mGradientDistributions,
+                    Shader.TileMode.CLAMP
+                )
+                updateGradientAngle(mGradientAngle)
+            }
         }
-
-        mProgressPaint.setShader(mGradientShader);
+        mProgressPaint!!.shader = mGradientShader
     }
 
-    @Override
-    void updateDrawingAngles() {
-        float height = mRadius - mProgress * (mRadius * 2) / DEFAULT_MAX;
-        double radiusPow = Math.pow(mRadius, 2);
-        double heightPow = Math.pow(height, 2);
-
-        mSweepAngle = (height == 0) ? 180 : (float) Math.toDegrees(Math.acos((heightPow + radiusPow - Math.pow(Math.sqrt(radiusPow - heightPow), 2)) / (2 * height * mRadius))) * 2;
-        mStartAngle = mDirectionAngle - (mSweepAngle / 2);
-        mBgSweepAngle = (mBackgroundOffset > 0) ? 360 : mSweepAngle - 360;
+    public override fun updateDrawingAngles() {
+        val height = mRadius - mProgress * (mRadius * 2) / DEFAULT_MAX
+        val radiusPow = mRadius.toDouble().pow(2.0)
+        val heightPow = height.toDouble().pow(2.0)
+        mSweepAngle = if (height == 0f) 180F else Math.toDegrees(
+            acos(
+                (heightPow + radiusPow - sqrt(
+                    radiusPow - heightPow
+                ).pow(2.0)) / (2 * height * mRadius)
+            )
+        ).toFloat() * 2
+        mStartAngle = mDirectionAngle - mSweepAngle / 2
+        mBgSweepAngle = if (mBackgroundOffset > 0) 360F else mSweepAngle - 360
     }
 
-    @Override
-    void updateGradientAngle(float angle) {
-        if (mGradientType == -1 || mGradientType == GRADIENT_RADIAL) return;
-        Matrix matrix = new Matrix();
-        matrix.postRotate(angle, mCircleBounds.centerX(), mCircleBounds.centerY());
-        mGradientShader.setLocalMatrix(matrix);
+    public override fun updateGradientAngle(angle: Float) {
+        if (mGradientType == -1 || mGradientType == GRADIENT_RADIAL) return
+        val matrix = Matrix()
+        mCircleBounds?.let { matrix.postRotate(angle, it.centerX(), mCircleBounds!!.centerY()) }
+        mGradientShader!!.setLocalMatrix(matrix)
     }
 
-    @Override
-    public float getStartAngle() {
-        return mDirectionAngle;
+    override fun getStartAngle(): Float {
+        return mDirectionAngle
     }
 
-    @Override
-    public void setStartAngle(float angle) {
-        if (this.mDirectionAngle == angle) return;
-        this.mDirectionAngle = angle;
-        updateDrawingAngles();
+    override fun setStartAngle(angle: Float) {
+        if (mDirectionAngle == angle) return
+        mDirectionAngle = angle
+        updateDrawingAngles()
     }
 
     //BACKGROUND OFFSET
-    public int getBackgroundOffset() {
-        return mBackgroundOffset;
-    }
-
-    public void setBackgroundOffset(int backgroundOffset) {
-        if (!mDrawBackground || this.mBackgroundOffset == backgroundOffset)
-            return;
-        this.mBackgroundOffset = backgroundOffset;
-        measureBackgroundBounds();
-        updateDrawingAngles();
-    }
+    override var backgroundOffset: Int
+        get() = mBackgroundOffset
+        set(backgroundOffset) {
+            if (!mDrawBackground || mBackgroundOffset == backgroundOffset) return
+            mBackgroundOffset = backgroundOffset
+            measureBackgroundBounds()
+            updateDrawingAngles()
+        }
 }
