@@ -182,13 +182,24 @@ class PieModeRenderer : BaseModeRenderer, OrientationBasedMode, OffsetEnabledMod
         mGradientShader!!.setLocalMatrix(matrix)
     }
 
-    override var orientation: Int
-        get() = orientation
+
+   /* open fun getOrientation() : Int {
+        orientation
+    }
+
+    fun setOrientation(value : Int){
+        if(this.orientation==value)
+            return
+        this.orientation=value
+        updateDrawingAngles()
+    }*/
+    /*override var orientation: Int
+        get() = this.orientation
         set(orientation) {
             if (this.orientation == orientation) return
             this.orientation = orientation
             updateDrawingAngles()
-        }
+        }*/
 
     override fun setStartAngle(startAngle: Float) {
         if (mStartAngle == startAngle) return

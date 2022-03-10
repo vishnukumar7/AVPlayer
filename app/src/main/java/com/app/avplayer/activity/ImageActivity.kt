@@ -82,8 +82,11 @@ class ImageActivity : BaseActivity() {
         override fun instantiateItem(container: ViewGroup, position: Int): Any {
             val binding: ImageViewBinding =
                 DataBindingUtil.inflate(layoutInflater, R.layout.image_view, container, false)
-            Glide.with(context).load(File(numOfImages[position].data)).placeholder(R.drawable.image)
-                .error(R.drawable.image).into(binding.imageView)
+            Glide.with(context).load(File(numOfImages[position].data))
+                //.placeholder(R.drawable.image)
+                .error(R.drawable.image)
+                .into(binding.imageView)
+
             container.addView(binding.root)
             return binding.root
         }

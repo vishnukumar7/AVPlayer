@@ -103,8 +103,8 @@ abstract class BaseModeRenderer {
     // COMMON
     var mBackgroundBounds: RectF? = null
     var mCircleBounds: RectF? = null
-    lateinit var mProgressColorAnimator: ValueAnimator
-    lateinit var mBackgroundColorAnimator:ValueAnimator
+     var mProgressColorAnimator: ValueAnimator?=null
+    var mBackgroundColorAnimator:ValueAnimator?=null
      var mTextColorAnimator:ValueAnimator? =null
     var mBgBarColorAnimator:ValueAnimator? = null
     private lateinit var mProgressAnimator: ValueAnimator
@@ -117,7 +117,7 @@ abstract class BaseModeRenderer {
     private var mProvidedProgressColor = 0
 
     @ProgressOrientation
-    open var orientation = 0
+    var orientation = 0
     var mAdaptiveColorProvider: AdaptiveColorProvider? = null
     private var mProvidedTextFormatter: ProgressTextFormatter? = null
     private  var defaultTextFormatter:ProgressTextFormatter? = null
@@ -508,26 +508,28 @@ abstract class BaseModeRenderer {
             mProgressAnimator.cancel()
         }
         mProgressAnimator.removeAllUpdateListeners()
-        if (mProgressColorAnimator!!.isRunning) {
-            mProgressColorAnimator!!.cancel()
+        if (mProgressColorAnimator?.isRunning == true) {
+            mProgressColorAnimator?.cancel()
         }
-        mProgressColorAnimator!!.removeAllUpdateListeners()
+        mProgressColorAnimator?.removeAllUpdateListeners()
         if (mBackgroundColorAnimator != null) {
-            if (mBackgroundColorAnimator!!.isRunning) {
-                mBackgroundColorAnimator!!.cancel()
+            if (mBackgroundColorAnimator?.isRunning == true) {
+                mBackgroundColorAnimator?.cancel()
             }
-            mBackgroundColorAnimator!!.removeAllUpdateListeners()
+            mBackgroundColorAnimator?.removeAllUpdateListeners()
         }
         if (mTextColorAnimator != null) {
-            if (mTextColorAnimator!!.isRunning) {
-                mTextColorAnimator!!.cancel()
+            if (mTextColorAnimator?.isRunning == true) {
+                mTextColorAnimator?.cancel()
             }
-            mTextColorAnimator!!.removeAllUpdateListeners()
+            mTextColorAnimator?.removeAllUpdateListeners()
         }
         mTextColorAnimator = null
-        mBackgroundColorAnimator = mTextColorAnimator!!
-        mProgressColorAnimator = mBackgroundColorAnimator!!
-        mProgressAnimator = mProgressColorAnimator
+        mBackgroundColorAnimator = mTextColorAnimator
+        mProgressColorAnimator = mBackgroundColorAnimator
+        mProgressColorAnimator?.let {
+            mProgressAnimator = it
+        }
         mBackgroundBounds = null
         mCircleBounds = mBackgroundBounds
         mTextPaint = null
@@ -576,20 +578,20 @@ abstract class BaseModeRenderer {
         if (mProgressColorAnimator == null) {
             mProgressColorAnimator =
                 ValueAnimator.ofObject(ArgbEvaluator(), mProgressColor, mProvidedProgressColor)
-            mProgressColorAnimator.addUpdateListener(AnimatorUpdateListener { animation: ValueAnimator ->
+            mProgressColorAnimator!!.addUpdateListener(AnimatorUpdateListener { animation: ValueAnimator ->
                 mProvidedProgressColor = animation.animatedValue as Int
                 mProgressPaint!!.color = mProvidedProgressColor
             })
-            mProgressColorAnimator.setDuration(mAnimDuration.toLong())
+            mProgressColorAnimator!!.duration = mAnimDuration.toLong()
         }
         if (mBackgroundColorAnimator == null) {
             mBackgroundColorAnimator =
                 ValueAnimator.ofObject(ArgbEvaluator(), mBackgroundColor, mProvidedBackgroundColor)
-            mBackgroundColorAnimator.addUpdateListener(AnimatorUpdateListener { animation: ValueAnimator ->
+            mBackgroundColorAnimator!!.addUpdateListener(AnimatorUpdateListener { animation: ValueAnimator ->
                 mProvidedBackgroundColor = animation.animatedValue as Int
                 mBackgroundPaint!!.color = mProvidedBackgroundColor
             })
-            mBackgroundColorAnimator.setDuration(mAnimDuration.toLong())
+            mBackgroundColorAnimator!!.setDuration(mAnimDuration.toLong())
         }
         if (mTextColorAnimator == null) {
             mTextColorAnimator =
@@ -627,11 +629,11 @@ abstract class BaseModeRenderer {
         if (mProgressAnimator.isRunning) {
             mProgressAnimator.cancel()
         }
-        if (mProgressColorAnimator.isRunning) {
-            mProgressColorAnimator.cancel()
+        if (mProgressColorAnimator?.isRunning == true) {
+            mProgressColorAnimator?.cancel()
         }
-        if (mBackgroundColorAnimator.isRunning) {
-            mBackgroundColorAnimator.cancel()
+        if (mBackgroundColorAnimator?.isRunning == true) {
+            mBackgroundColorAnimator?.cancel()
         }
         if (mTextColorAnimator != null && mTextColorAnimator!!.isRunning) {
             mTextColorAnimator!!.cancel()
@@ -775,8 +777,8 @@ abstract class BaseModeRenderer {
         if (mAnimDuration == duration) return
         mAnimDuration = duration
         mProgressAnimator.duration = mAnimDuration.toLong()
-        mProgressColorAnimator.duration = mAnimDuration.toLong()
-        mBackgroundColorAnimator.duration = mAnimDuration.toLong()
+        mProgressColorAnimator!!.duration = mAnimDuration.toLong()
+        mBackgroundColorAnimator!!.duration = mAnimDuration.toLong()
         if (mTextColorAnimator != null) {
             mTextColorAnimator!!.duration = mAnimDuration.toLong()
         }

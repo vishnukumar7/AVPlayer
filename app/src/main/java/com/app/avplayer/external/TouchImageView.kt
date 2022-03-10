@@ -63,7 +63,7 @@ init(context)
 init(context)
     }
 
-    fun init(context: Context) {
+    private fun init(context: Context) {
         gestureDetector = GestureDetector(context,DoubleTapGestureListener())
         super.setClickable(true)
         ctx = context

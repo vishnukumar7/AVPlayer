@@ -48,7 +48,7 @@ class IOHandler(channel: SocketChannel, requestByte: ByteArray, httpServer: Tiny
         response.setStatus(re.status)
         try {
             response.write(mResponseEncoder.encode(response))
-            response.write(re.message?.toByteArray())
+            response.write(re.message?.toByteArray()!!)
         } catch (e: IOException) {
             e("Error writing the response$e")
         }

@@ -341,13 +341,13 @@ class RingModeRenderer : BaseModeRenderer, OrientationBasedMode {
         mGradientShader!!.setLocalMatrix(matrix)
     }
 
-    override var orientation: Int
+  /*  override var orientation: Int
         get() = orientation
         set(orientation) {
             if (this.orientation == orientation) return
             this.orientation = orientation
             updateDrawingAngles()
-        }
+        }*/
 
     override fun setStartAngle(startAngle: Float) {
         if (mStartAngle == startAngle) return

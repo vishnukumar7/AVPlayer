@@ -2,7 +2,6 @@ package com.app.avplayer.adapter
 
 import android.content.Context
 import android.content.Intent
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -171,6 +170,8 @@ class AVPlayerAdapter(
                     val intent = Intent(context, VideoPlayActivity::class.java)
                     intent.putExtra(Constants.TAG_DATA, video)
                     context.startActivity(intent)
+
+
                 }
             }
             is GalleryGridViewHolder -> {
